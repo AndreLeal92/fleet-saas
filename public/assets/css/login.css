@@ -188,6 +188,32 @@ box-shadow:0 8px 18px rgba(59,130,246,0.35);
 
 }
 
+/* LINK CADASTRO */
+
+.Register-link{
+
+text-align:center;
+
+margin-top:18px;
+
+font-size:14px;
+
+}
+
+.Register-link a{
+
+color:#2563eb;
+font-weight:500;
+text-decoration:none;
+
+}
+
+.Register-link a:hover{
+
+text-decoration:underline;
+
+}
+
 /* RESPONSIVO */
 
 @media(max-width:768px){
