@@ -1,17 +1,16 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// carregar Router
+require_once __DIR__ . '/../core/Router.php';
 
-if ($uri === '/' || $uri === '') {
-    echo "Fleet SaaS funcionando";
-    exit;
-}
+// carregar rotas
+require_once __DIR__ . '/../routes/web.php';
 
-if ($uri === '/login') {
-    require __DIR__ . '/views/login.php';
-    exit;
-}
-
-echo "Página não encontrada";
+// executar rota
+Router::dispatch();
