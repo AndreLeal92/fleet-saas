@@ -12,27 +12,36 @@ class Router {
         self::$routes['POST'][$uri] = $action;
     }
 
-    public static function run() {
+    public static function dispatch() {
 
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-        if(isset(self::$routes[$method][$uri])) {
-
-            $action = self::$routes[$method][$uri];
-
-            list($controller,$method) = explode('@',$action);
-
-            require "../app/controllers/$controller.php";
-
-            $controller = new $controller();
-
-            return $controller->$method();
+        if (!isset(self::$routes[$method][$uri])) {
+            echo "Rota não encontrada";
+            return;
         }
 
-        http_response_code(404);
-        echo "Página não encontrada";
+        $action = self::$routes[$method][$uri];
 
+        list($controller, $method) = explode('@', $action);
+
+        $controllerFile = __DIR__ . '/../app/controllers/' . $controller . '.php';
+
+        if (!file_exists($controllerFile)) {
+            echo "Controller não encontrado";
+            return;
+        }
+
+        require_once $controllerFile;
+
+        $controller = new $controller();
+
+        if (!method_exists($controller, $method)) {
+            echo "Método não encontrado";
+            return;
+        }
+
+        $controller->$method();
     }
-
 }
