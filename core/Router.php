@@ -17,11 +17,11 @@ class Router {
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-        if (isset(self::$routes[$method][$uri])) {
+        if(isset(self::$routes[$method][$uri])) {
 
             $action = self::$routes[$method][$uri];
 
-            list($controller, $method) = explode('@', $action);
+            list($controller,$method) = explode('@',$action);
 
             require "../app/controllers/$controller.php";
 
@@ -30,7 +30,9 @@ class Router {
             return $controller->$method();
         }
 
-        echo "404";
+        http_response_code(404);
+        echo "Página não encontrada";
+
     }
 
 }
