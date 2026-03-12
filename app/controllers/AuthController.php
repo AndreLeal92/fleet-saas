@@ -10,14 +10,10 @@ class AuthController {
         $this->authService = new AuthService();
     }
 
-    // mostrar tela
     public function showLogin() {
-
         require __DIR__ . '/../../public/views/login.php';
-
     }
 
-    // processar login
     public function authenticate() {
 
         $email = $_POST['email'] ?? '';
@@ -36,10 +32,10 @@ class AuthController {
 
     public function logout() {
 
-        session_start();
         session_destroy();
 
         header("Location: /login");
         exit;
     }
+
 }

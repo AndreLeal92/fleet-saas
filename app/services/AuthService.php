@@ -22,14 +22,7 @@ class AuthService {
             return false;
         }
 
-        session_start();
-
-        $_SESSION['user'] = [
-            "id" => $user['id'],
-            "name" => $user['name'],
-            "email" => $user['email'],
-            "company_id" => $user['company_id']
-        ];
+        $_SESSION['user'] = $user;
 
         return true;
     }

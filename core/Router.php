@@ -24,7 +24,7 @@ class Router {
 
         $action = self::$routes[$method][$uri];
 
-        list($controller, $method) = explode('@', $action);
+        list($controller, $methodAction) = explode('@', $action);
 
         $controllerFile = __DIR__ . '/../app/controllers/' . $controller . '.php';
 
@@ -35,13 +35,14 @@ class Router {
 
         require_once $controllerFile;
 
-        $controller = new $controller();
+        $controllerInstance = new $controller();
 
-        if (!method_exists($controller, $method)) {
+        if (!method_exists($controllerInstance, $methodAction)) {
             echo "Método não encontrado";
             return;
         }
 
-        $controller->$method();
+        $controllerInstance->$methodAction();
     }
+
 }
