@@ -18,6 +18,8 @@
 
 <body>
 
+<div class="login-wrapper">
+
 <div class="logo">
 <img src="/assets/images/Neofleet.png" alt="NeoFleet">
 </div>
@@ -62,6 +64,8 @@ id="password"
 </form>
 
 </main>
+
+</div>
 
 <script>
 
