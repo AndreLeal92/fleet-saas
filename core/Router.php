@@ -2,22 +2,35 @@
 
 class Router {
 
-    public static function route($uri) {
+    private static $routes = [];
 
-        switch ($uri) {
+    public static function get($uri, $action) {
+        self::$routes['GET'][$uri] = $action;
+    }
 
-            case "/":
-                echo "Fleet SaaS";
-                break;
+    public static function post($uri, $action) {
+        self::$routes['POST'][$uri] = $action;
+    }
 
-            case "/login":
-                echo "Tela login";
-                break;
+    public static function run() {
 
-            default:
-                echo "404";
+        $method = $_SERVER['REQUEST_METHOD'];
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        if (isset(self::$routes[$method][$uri])) {
+
+            $action = self::$routes[$method][$uri];
+
+            list($controller, $method) = explode('@', $action);
+
+            require "../app/controllers/$controller.php";
+
+            $controller = new $controller();
+
+            return $controller->$method();
         }
 
+        echo "404";
     }
 
 }
