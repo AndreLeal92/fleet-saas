@@ -1,10 +1,14 @@
 <?php
 
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+
 class DashboardController {
 
     public function index() {
 
-        echo "Dashboard funcionando 🚀";
+        AuthMiddleware::handle();
+
+        echo "Dashboard NeoFleet funcionando 🚀";
 
     }
 
