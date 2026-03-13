@@ -24,4 +24,42 @@ class UserModel {
 
     }
 
+    public function all(){
+
+        $sql = "SELECT id, name, email, role FROM users";
+
+        $stmt = $this->db->query($sql);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
+    public function create($name,$email,$password,$role){
+
+        $sql = "INSERT INTO users (name,email,password,role)
+                VALUES (:name,:email,:password,:role)";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'name'=>$name,
+            'email'=>$email,
+            'password'=>$password,
+            'role'=>$role
+        ]);
+
+    }
+
+    public function delete($id){
+
+        $sql = "DELETE FROM users WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'id'=>$id
+        ]);
+
+    }
+
 }
