@@ -4,11 +4,13 @@ require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class DashboardController {
 
-    public function index() {
+    public function index(){
 
         AuthMiddleware::handle();
 
-        require __DIR__ . '/../views/dashboard/index.php';
+        $view = __DIR__ . '/../views/dashboard/index.php';
+
+        require __DIR__ . '/../views/layout.php';
 
     }
 

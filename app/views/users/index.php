@@ -1,16 +1,14 @@
 <h1>Usuários</h1>
 
 <?php if(isset($_GET['success'])){ ?>
-<div style="color:green;">Usuário criado com sucesso</div>
-<?php } ?>
-
-<?php if(isset($_GET['deleted'])){ ?>
-<div style="color:red;">Usuário removido</div>
+<div style="color:green;">Usuário salvo com sucesso</div>
 <?php } ?>
 
 <a href="/users/create">Novo Usuário</a>
 
-<table border="1" cellpadding="8">
+<br><br>
+
+<table border="1" cellpadding="10">
 
 <tr>
 <th>ID</th>
@@ -38,7 +36,3 @@
 <?php } ?>
 
 </table>
-
-<br>
-
-<a href="/">⬅ Voltar ao Dashboard</a>
