@@ -73,6 +73,7 @@ body{
 
 <h2>NeoFleet</h2>
 
+<a href="/users">Usuários</a>
 <a href="/">Dashboard</a>
 <a href="/vehicles">Veículos</a>
 <a href="/drivers">Motoristas</a>
