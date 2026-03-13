@@ -8,7 +8,7 @@ class DashboardController {
 
         AuthMiddleware::handle();
 
-        require __DIR__ . '/../../public/views/dashboard/index.php';
+        require __DIR__ . '/../views/dashboard/index.php';
 
     }
 
