@@ -8,7 +8,7 @@ class DashboardController {
 
         AuthMiddleware::handle();
 
-        echo "Dashboard NeoFleet funcionando 🚀";
+        require __DIR__ . '/../../public/views/dashboard/index.php';
 
     }
 
