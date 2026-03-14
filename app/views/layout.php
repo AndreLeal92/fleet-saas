@@ -74,9 +74,10 @@ margin:0;
 <body>
 
 <div class="sidebar">
-
-<h2>NeoFleet</h2>
-
+<div class="sidebar-title">
+<img src="/assets/images/Neofleet_branco.png" style="width:120px;">
+</div>
+    
 <a href="/">Dashboard</a>
 <a href="/vehicles">Veículos</a>
 <a href="/maintenance">Manutenções</a>
