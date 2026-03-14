@@ -1,57 +1,65 @@
 <?php
 
 require_once __DIR__ . '/../models/UserModel.php';
-require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class UserController {
 
     private $userModel;
 
-    public function __construct(){
-
+    public function __construct() {
         $this->userModel = new UserModel();
-
     }
 
-    public function index(){
-
-        AuthMiddleware::handle();
+    public function index() {
 
         $users = $this->userModel->all();
 
-        $view = __DIR__ . '/../views/users/index.php';
+        require __DIR__ . '/../views/users/index.php';
+    }
 
-        require __DIR__ . '/../views/layout.php';
+    public function create() {
+
+        require __DIR__ . '/../views/users/create.php';
 
     }
 
-    public function create(){
+    public function store() {
 
-        AuthMiddleware::handle();
-
-        $view = __DIR__ . '/../views/users/create.php';
-
-        require __DIR__ . '/../views/layout.php';
-
-    }
-
-    public function store(){
-
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $role = $_POST['role'];
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $role = $_POST['role'] ?? 'user';
 
         $this->userModel->create($name,$email,$password,$role);
 
-        header("Location: /users?success=1");
+        header("Location: /users?created=1");
         exit;
 
     }
 
-    public function delete(){
+    public function edit($id) {
 
-        $id = $_GET['id'];
+        $user = $this->userModel->findById($id);
+
+        require __DIR__ . '/../views/users/edit.php';
+
+    }
+
+    public function update($id) {
+
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $role = $_POST['role'] ?? 'user';
+        $password = $_POST['password'] ?? '';
+
+        $this->userModel->update($id,$name,$email,$role,$password);
+
+        header("Location: /users?updated=1");
+        exit;
+
+    }
+
+    public function delete($id) {
 
         $this->userModel->delete($id);
 

@@ -12,23 +12,31 @@ class UserModel {
 
     }
 
-    // Buscar usuário pelo email (login)
     public function findByEmail($email) {
 
         $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
+        $stmt->execute(['email'=>$email]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
 
     }
 
-    // Listar usuários
+    public function findById($id){
+
+        $sql = "SELECT id,name,email,role FROM users WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id'=>$id]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    }
+
     public function all(){
 
-        $sql = "SELECT id, name, email, role FROM users";
+        $sql = "SELECT id,name,email,role FROM users";
 
         $stmt = $this->db->query($sql);
 
@@ -36,10 +44,8 @@ class UserModel {
 
     }
 
-    // Criar usuário
     public function create($name,$email,$password,$role){
 
-        // hash da senha
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $sql = "INSERT INTO users (name,email,password,role,must_change_password)
@@ -56,13 +62,50 @@ class UserModel {
 
     }
 
-    // Atualizar senha (primeiro acesso)
-    public function updatePassword($id, $password){
+    public function update($id,$name,$email,$role,$password){
+
+        if(!empty($password)){
+
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+            $sql = "UPDATE users
+                    SET name=:name,email=:email,role=:role,password=:password
+                    WHERE id=:id";
+
+            $stmt = $this->db->prepare($sql);
+
+            $stmt->execute([
+                'name'=>$name,
+                'email'=>$email,
+                'role'=>$role,
+                'password'=>$passwordHash,
+                'id'=>$id
+            ]);
+
+        } else {
+
+            $sql = "UPDATE users
+                    SET name=:name,email=:email,role=:role
+                    WHERE id=:id";
+
+            $stmt = $this->db->prepare($sql);
+
+            $stmt->execute([
+                'name'=>$name,
+                'email'=>$email,
+                'role'=>$role,
+                'id'=>$id
+            ]);
+
+        }
+
+    }
+
+    public function updatePassword($id,$password){
 
         $sql = "UPDATE users 
-                SET password = :password,
-                    must_change_password = 0
-                WHERE id = :id";
+                SET password=:password,must_change_password=0
+                WHERE id=:id";
 
         $stmt = $this->db->prepare($sql);
 
@@ -73,16 +116,13 @@ class UserModel {
 
     }
 
-    // Deletar usuário
     public function delete($id){
 
-        $sql = "DELETE FROM users WHERE id = :id";
+        $sql = "DELETE FROM users WHERE id=:id";
 
         $stmt = $this->db->prepare($sql);
 
-        $stmt->execute([
-            'id'=>$id
-        ]);
+        $stmt->execute(['id'=>$id]);
 
     }
 
