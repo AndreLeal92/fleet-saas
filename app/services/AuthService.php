@@ -10,21 +10,22 @@ class AuthService {
         $this->userModel = new UserModel();
     }
 
-    public function login($email, $password) {
+ public function login($email, $password)
+{
+    $user = $this->userModel->findByEmail($email);
 
-        $user = $this->userModel->findByEmail($email);
-
-        if (!$user) {
-            return false;
-        }
-
-        if (!password_verify($password, $user['password'])) {
-            return false;
-        }
-
-        $_SESSION['user'] = $user;
-
-        return true;
+    if (!$user) {
+        return false;
     }
+
+    if (!password_verify($password, $user['password'])) {
+        return false;
+    }
+
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_name'] = $user['name'];
+
+    return $user;
+}
 
 }
