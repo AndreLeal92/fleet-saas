@@ -4,17 +4,27 @@
 
 <div class="card">
 <h3>Veículos</h3>
-<p>12</p>
+<p><?= $vehicles ?></p>
 </div>
 
 <div class="card">
 <h3>Motoristas</h3>
-<p>8</p>
+<p><?= $drivers ?></p>
 </div>
 
 <div class="card">
 <h3>Abastecimentos</h3>
-<p>54</p>
+<p><?= $fuel ?></p>
+</div>
+
+<div class="card">
+<h3>Viagens</h3>
+<p><?= $trips ?></p>
+</div>
+
+<div class="card">
+<h3>Despesas</h3>
+<p><?= $expenses ?></p>
 </div>
 
 </div>

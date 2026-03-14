@@ -277,25 +277,31 @@ padding:40px;
 
 .cards{
 display:flex;
-gap:25px;
-margin-top:20px;
+gap:20px;
 flex-wrap:wrap;
+margin-top:20px;
 }
 
 .card{
 background:white;
 padding:25px;
-border-radius:12px;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
-min-width:220px;
+border-radius:10px;
+width:220px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+box-shadow:0 8px 18px rgba(0,0,0,0.15);
 }
 
 .card h3{
+margin:0 0 10px 0;
 font-size:18px;
-margin-bottom:10px;
 }
 
 .card p{
-font-size:22px;
-font-weight:600;
+font-size:28px;
+font-weight:bold;
 }
