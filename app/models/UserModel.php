@@ -34,22 +34,20 @@ class UserModel {
 
     }
 
-    public function create($name,$email,$password,$role){
+public function create($name,$email,$password,$role){
 
-        $sql = "INSERT INTO users (name,email,password,role)
-                VALUES (:name,:email,:password,:role)";
+    $sql = "INSERT INTO users (name,email,password,role,must_change_password)
+            VALUES (:name,:email,:password,:role,1)";
 
-        $stmt = $this->db->prepare($sql);
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+        'name'=>$name,
+        'email'=>$email,
+        'password'=>$password,
+        'role'=>$role
+    ]);
 
-        $stmt->execute([
-            'name'=>$name,
-            'email'=>$email,
-            'password'=>$password,
-            'role'=>$role
-        ]);
-
-    }
-
+}
     public function delete($id){
 
         $sql = "DELETE FROM users WHERE id = :id";
