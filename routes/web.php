@@ -66,3 +66,20 @@ Router::get('/maintenance', 'MaintenanceController@index');
 Router::get('/maintenance/create', 'MaintenanceController@create');
 Router::post('/maintenance/store', 'MaintenanceController@store');
 Router::get('/maintenance/delete', 'MaintenanceController@delete');
+
+// =========================
+// TRIP_EXPENSE
+// =========================
+Router::get('/trip-expenses', 'TripExpenseController@index');
+Router::get('/trip-expenses/create', 'TripExpenseController@create');
+Router::post('/trip-expenses/store', 'TripExpenseController@store');
+Router::get('/trip-expenses/delete', 'TripExpenseController@delete');
+
+// =========================
+// TRIP
+// =========================
+
+Router::get('/trips', 'TripController@index');
+Router::get('/trips/create', 'TripController@create');
+Router::post('/trips/store', 'TripController@store');
+Router::get('/trips/delete', 'TripController@delete');

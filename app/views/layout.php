@@ -79,6 +79,8 @@ margin:0;
 </div>
     
 <a href="/">Dashboard</a>
+<a href="/trip-expenses">Despesas de Viagem</a>
+<a href="/trips">Viagens</a>
 <a href="/vehicles">Veículos</a>
 <a href="/maintenance">Manutenções</a>
 <a href="/drivers">Motoristas</a>
