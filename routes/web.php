@@ -50,3 +50,19 @@ Router::get('/drivers', 'DriverController@index');
 Router::get('/drivers/create', 'DriverController@create');
 Router::post('/drivers/store', 'DriverController@store');
 Router::get('/drivers/delete', 'DriverController@delete');
+
+// =========================
+// FUEL
+// =========================
+Router::get('/fuel', 'FuelController@index');
+Router::get('/fuel/create', 'FuelController@create');
+Router::post('/fuel/store', 'FuelController@store');
+Router::get('/fuel/delete', 'FuelController@delete');
+
+// =========================
+// MAINTENANCE
+// =========================
+Router::get('/maintenance', 'MaintenanceController@index');
+Router::get('/maintenance/create', 'MaintenanceController@create');
+Router::post('/maintenance/store', 'MaintenanceController@store');
+Router::get('/maintenance/delete', 'MaintenanceController@delete');

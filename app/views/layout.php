@@ -79,6 +79,7 @@ margin:0;
 
 <a href="/">Dashboard</a>
 <a href="/vehicles">Veículos</a>
+<a href="/maintenance">Manutenções</a>
 <a href="/drivers">Motoristas</a>
 <a href="/fuel">Abastecimentos</a>
 <a href="/users">Usuários</a>
