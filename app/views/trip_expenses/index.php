@@ -1,66 +1,91 @@
-<?php
+<h1>Despesas de Viagem</h1>
 
-require_once __DIR__ . '/../models/TripExpense.php';
-require_once __DIR__ . '/../models/DriverModel.php';
-require_once __DIR__ . '/../models/VehicleModel.php';
+<a href="/trip-expenses/create" style="
+background:#2563eb;
+color:white;
+padding:10px 15px;
+text-decoration:none;
+border-radius:5px;
+display:inline-block;
+margin-bottom:15px;
+">
+Nova Despesa
+</a>
 
-class TripExpenseController {
+<table style="
+width:100%;
+border-collapse:collapse;
+background:white;
+box-shadow:0 3px 8px rgba(0,0,0,0.1);
+">
 
-    private $expenseModel;
-    private $driverModel;
-    private $vehicleModel;
+<tr style="background:#111827;color:white;">
+<th style="padding:10px;">Motorista</th>
+<th style="padding:10px;">Veículo</th>
+<th style="padding:10px;">Tipo</th>
+<th style="padding:10px;">Descrição</th>
+<th style="padding:10px;">Local</th>
+<th style="padding:10px;">Valor</th>
+<th style="padding:10px;">Data</th>
+<th style="padding:10px;">Ações</th>
+</tr>
 
-    public function __construct(){
+<?php if(!empty($expenses)): ?>
 
-        $this->expenseModel = new TripExpense();
-        $this->driverModel = new DriverModel();
-        $this->vehicleModel = new VehicleModel();
+<?php foreach($expenses as $expense): ?>
 
-    }
+<tr style="border-bottom:1px solid #ddd">
 
-    public function index(){
+<td style="padding:10px">
+<?= htmlspecialchars($expense['driver_name']) ?>
+</td>
 
-        $expenses = $this->expenseModel->all();
+<td style="padding:10px">
+<?= htmlspecialchars($expense['vehicle_plate']) ?>
+</td>
 
-        $view = 'trip_expenses/index';
+<td style="padding:10px">
+<?= htmlspecialchars($expense['expense_type']) ?>
+</td>
 
-        require __DIR__ . '/../views/layout.php';
+<td style="padding:10px">
+<?= htmlspecialchars($expense['description']) ?>
+</td>
 
-    }
+<td style="padding:10px">
+<?= htmlspecialchars($expense['location']) ?>
+</td>
 
-    public function create(){
+<td style="padding:10px">
+R$ <?= number_format($expense['amount'],2,',','.') ?>
+</td>
 
-        $drivers = $this->driverModel->all();
-        $vehicles = $this->vehicleModel->all();
+<td style="padding:10px">
+<?= $expense['expense_date'] ?>
+</td>
 
-        $view = 'trip_expenses/create';
+<td style="padding:10px">
 
-        require __DIR__ . '/../views/layout.php';
+<a href="/trip-expenses/delete?id=<?= $expense['id'] ?>"
+style="color:red;text-decoration:none;"
+onclick="return confirm('Excluir despesa?')">
+Excluir
+</a>
 
-    }
+</td>
 
-    public function store(){
+</tr>
 
-        $this->expenseModel->create(
-            $_POST['driver_id'],
-            $_POST['vehicle_id'],
-            $_POST['expense_type'],
-            $_POST['description'],
-            $_POST['location'],
-            $_POST['amount'],
-            $_POST['expense_date']
-        );
+<?php endforeach; ?>
 
-        header("Location: /trip-expenses");
-        exit;
-    }
+<?php else: ?>
 
-    public function delete(){
+<tr>
+<td colspan="8" style="padding:20px;text-align:center;">
+Nenhuma despesa cadastrada
+</td>
+</tr>
 
-        $this->expenseModel->delete($_GET['id']);
+<?php endif; ?>
 
-        header("Location: /trip-expenses");
-        exit;
-    }
-
-}
+</table>

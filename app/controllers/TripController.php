@@ -46,14 +46,14 @@ class TripController {
             $_POST['vehicle_id'],
             $_POST['origin'],
             $_POST['destination'],
-            $_POST['start_km'],
-            $_POST['end_km'],
             $_POST['trip_date'],
-            $_POST['notes']
+            $_POST['km_start'],
+            $_POST['km_end']
         );
 
         header("Location: /trips");
         exit;
+
     }
 
     public function delete(){
@@ -62,6 +62,7 @@ class TripController {
 
         header("Location: /trips");
         exit;
+
     }
 
 }

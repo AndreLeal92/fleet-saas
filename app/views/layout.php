@@ -24,7 +24,7 @@ color:white;
 position:fixed;
 }
 
-.sidebar h2{
+.sidebar-title{
 text-align:center;
 padding:20px;
 border-bottom:1px solid #333;
@@ -38,6 +38,31 @@ text-decoration:none;
 }
 
 .sidebar a:hover{
+background:#2563eb;
+}
+
+/* MENU DROPDOWN */
+
+.menu-item{
+padding:15px 20px;
+cursor:pointer;
+}
+
+.menu-item:hover{
+background:#2563eb;
+}
+
+.submenu{
+display:none;
+background:#1f2937;
+}
+
+.submenu a{
+padding:12px 40px;
+font-size:14px;
+}
+
+.submenu a:hover{
 background:#2563eb;
 }
 
@@ -74,18 +99,56 @@ margin:0;
 <body>
 
 <div class="sidebar">
+
 <div class="sidebar-title">
-<img src="/assets/images/Neofleet_branco.png" style="width:120px;">
+<img src="/assets/images/Neofleet_branco.png" style="width:190px;">
 </div>
-    
+
 <a href="/">Dashboard</a>
+
 <a href="/trip-expenses">Despesas de Viagem</a>
+
 <a href="/trips">Viagens</a>
-<a href="/vehicles">Veículos</a>
+
+
+<!-- VEICULOS -->
+
+<div class="menu-item" onclick="toggleMenu('menuVeiculos')">
+Veículos ▾
+</div>
+
+<div id="menuVeiculos" class="submenu">
+<a href="/vehicles">Lista de Veículos</a>
 <a href="/maintenance">Manutenções</a>
-<a href="/drivers">Motoristas</a>
+</div>
+
+
+<!-- MOTORISTAS -->
+
+<div class="menu-item" onclick="toggleMenu('menuMotoristas')">
+Motoristas ▾
+</div>
+
+<div id="menuMotoristas" class="submenu">
+<a href="/drivers">Lista de Motoristas</a>
+</div>
+
+
+<!-- ABASTECIMENTOS -->
+
 <a href="/fuel">Abastecimentos</a>
-<a href="/users">Usuários</a>
+
+
+<!-- USUARIOS -->
+
+<div class="menu-item" onclick="toggleMenu('menuUsuarios')">
+Usuários ▾
+</div>
+
+<div id="menuUsuarios" class="submenu">
+<a href="/users">Lista de Usuários</a>
+</div>
+
 <a href="/logout">Sair</a>
 
 </div>
@@ -95,6 +158,23 @@ margin:0;
 <?php require __DIR__ . '/' . $view . '.php'; ?>
 
 </div>
+
+
+<script>
+
+function toggleMenu(menuId){
+
+let menu = document.getElementById(menuId);
+
+if(menu.style.display === "block"){
+menu.style.display = "none";
+}else{
+menu.style.display = "block";
+}
+
+}
+
+</script>
 
 </body>
 </html>
