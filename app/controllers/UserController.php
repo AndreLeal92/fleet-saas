@@ -14,13 +14,25 @@ class UserController {
 
         $users = $this->userModel->all();
 
-        require __DIR__ . '/../views/users/index.php';
+        $view = 'users/index';
+
+        require __DIR__ . '/../views/layout.php';
     }
 
     public function create() {
 
-        require __DIR__ . '/../views/users/create.php';
+        $view = 'users/create';
 
+        require __DIR__ . '/../views/layout.php';
+    }
+
+    public function edit($id) {
+
+        $user = $this->userModel->findById($id);
+
+        $view = 'users/edit';
+
+        require __DIR__ . '/../views/layout.php';
     }
 
     public function store() {
@@ -32,17 +44,8 @@ class UserController {
 
         $this->userModel->create($name,$email,$password,$role);
 
-        header("Location: /users?created=1");
+        header("Location: /users");
         exit;
-
-    }
-
-    public function edit($id) {
-
-        $user = $this->userModel->findById($id);
-
-        require __DIR__ . '/../views/users/edit.php';
-
     }
 
     public function update($id) {
@@ -54,18 +57,16 @@ class UserController {
 
         $this->userModel->update($id,$name,$email,$role,$password);
 
-        header("Location: /users?updated=1");
+        header("Location: /users");
         exit;
-
     }
 
     public function delete($id) {
 
         $this->userModel->delete($id);
 
-        header("Location: /users?deleted=1");
+        header("Location: /users");
         exit;
-
     }
 
 }

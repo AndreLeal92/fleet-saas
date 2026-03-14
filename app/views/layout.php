@@ -88,7 +88,7 @@ margin:0;
 
 <div class="main">
 
-<?php require $view; ?>
+<?php require __DIR__ . '/' . $view . '.php'; ?>
 
 </div>
 

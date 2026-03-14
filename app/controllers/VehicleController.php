@@ -1,60 +1,50 @@
 <?php
 
 require_once __DIR__ . '/../models/VehicleModel.php';
-require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class VehicleController {
 
     private $vehicleModel;
 
-    public function __construct(){
-
+    public function __construct() {
         $this->vehicleModel = new VehicleModel();
-
     }
 
-    public function index(){
-
-        AuthMiddleware::handle();
+    public function index() {
 
         $vehicles = $this->vehicleModel->all();
 
-        $view = __DIR__ . '/../views/vehicles/index.php';
+        $view = 'vehicles/index';
 
         require __DIR__ . '/../views/layout.php';
-
     }
 
-    public function create(){
+    public function create() {
 
-        $view = __DIR__ . '/../views/vehicles/create.php';
+        $view = 'vehicles/create';
 
         require __DIR__ . '/../views/layout.php';
-
     }
 
-    public function store(){
+    public function store() {
 
-        $plate = $_POST['plate'];
-        $model = $_POST['model'];
-        $year = $_POST['year'];
+        $plate = $_POST['plate'] ?? '';
+        $model = $_POST['model'] ?? '';
+        $brand = $_POST['brand'] ?? '';
+        $year = $_POST['year'] ?? '';
 
-        $this->vehicleModel->create($plate,$model,$year);
+        $this->vehicleModel->create($plate,$model,$brand,$year);
 
-        header("Location: /vehicles?success=1");
+        header("Location: /vehicles");
         exit;
-
     }
 
-    public function delete(){
-
-        $id = $_GET['id'];
+    public function delete($id) {
 
         $this->vehicleModel->delete($id);
 
-        header("Location: /vehicles?deleted=1");
+        header("Location: /vehicles");
         exit;
-
     }
 
 }
