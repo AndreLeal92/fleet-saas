@@ -12,55 +12,25 @@ class TripExpenseController {
 
     public function __construct(){
 
-        $this->expenseModel = new TripExpense();
-        $this->driverModel = new DriverModel();
-        $this->vehicleModel = new VehicleModel();
+        if(!isset($_SESSION['company_id'])){
+            header("Location: /login");
+            exit;
+        }
 
+        $company_id = (int) $_SESSION['company_id'];
+
+        $this->expenseModel = new TripExpense($company_id);
+        $this->driverModel  = new DriverModel($company_id);
+        $this->vehicleModel = new VehicleModel($company_id);
     }
 
     public function index(){
 
         $expenses = $this->expenseModel->all();
 
-        $view = 'trip_expenses/index';
+        $view = 'trip-expenses/index';
 
         require __DIR__ . '/../views/layout.php';
-
-    }
-
-    public function create(){
-
-        $drivers = $this->driverModel->all();
-        $vehicles = $this->vehicleModel->all();
-
-        $view = 'trip_expenses/create';
-
-        require __DIR__ . '/../views/layout.php';
-
-    }
-
-    public function store(){
-
-        $this->expenseModel->create(
-            $_POST['driver_id'],
-            $_POST['vehicle_id'],
-            $_POST['expense_type'],
-            $_POST['description'],
-            $_POST['location'],
-            $_POST['amount'],
-            $_POST['expense_date']
-        );
-
-        header("Location: /trip-expenses");
-        exit;
-    }
-
-    public function delete(){
-
-        $this->expenseModel->delete($_GET['id']);
-
-        header("Location: /trip-expenses");
-        exit;
     }
 
 }

@@ -1,35 +1,31 @@
 <?php
 
 // =========================
-// DASHBOARD
-// =========================
-Router::get('/', 'DashboardController@index');
-
-
-// =========================
-// AUTH
+// AUTH (rotas públicas)
 // =========================
 Router::get('/login', 'AuthController@showLogin');
 Router::post('/login', 'AuthController@authenticate');
 
 Router::get('/logout', 'AuthController@logout');
 
-// troca obrigatória de senha
 Router::get('/change-password', 'AuthController@showChangePassword');
 Router::post('/change-password', 'AuthController@changePassword');
+
+
+// =========================
+// DASHBOARD
+// =========================
+Router::get('/', 'DashboardController@index');
 
 
 // =========================
 // USERS
 // =========================
 Router::get('/users', 'UserController@index');
-
 Router::get('/users/create', 'UserController@create');
 Router::post('/users/store', 'UserController@store');
-
 Router::get('/users/edit', 'UserController@edit');
 Router::post('/users/update', 'UserController@update');
-
 Router::get('/users/delete', 'UserController@delete');
 
 
@@ -43,6 +39,7 @@ Router::get('/vehicles/edit', 'VehicleController@edit');
 Router::post('/vehicles/update', 'VehicleController@update');
 Router::get('/vehicles/delete', 'VehicleController@delete');
 
+
 // =========================
 // DRIVERS
 // =========================
@@ -50,6 +47,7 @@ Router::get('/drivers', 'DriverController@index');
 Router::get('/drivers/create', 'DriverController@create');
 Router::post('/drivers/store', 'DriverController@store');
 Router::get('/drivers/delete', 'DriverController@delete');
+
 
 // =========================
 // FUEL
@@ -59,6 +57,7 @@ Router::get('/fuel/create', 'FuelController@create');
 Router::post('/fuel/store', 'FuelController@store');
 Router::get('/fuel/delete', 'FuelController@delete');
 
+
 // =========================
 // MAINTENANCE
 // =========================
@@ -67,16 +66,18 @@ Router::get('/maintenance/create', 'MaintenanceController@create');
 Router::post('/maintenance/store', 'MaintenanceController@store');
 Router::get('/maintenance/delete', 'MaintenanceController@delete');
 
+
 // =========================
-// TRIP_EXPENSE
+// TRIP EXPENSE
 // =========================
 Router::get('/trip-expenses', 'TripExpenseController@index');
 Router::get('/trip-expenses/create', 'TripExpenseController@create');
 Router::post('/trip-expenses/store', 'TripExpenseController@store');
 Router::get('/trip-expenses/delete', 'TripExpenseController@delete');
 
+
 // =========================
-// TRIP
+// TRIPS
 // =========================
 Router::get('/trips', 'TripController@index');
 Router::get('/trips/create', 'TripController@create');

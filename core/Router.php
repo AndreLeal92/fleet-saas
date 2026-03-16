@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../app/middleware/AuthMiddleware.php';
+
 class Router {
 
     private static $routes = [];
@@ -15,34 +17,57 @@ class Router {
     public static function dispatch(){
 
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $method = $_SERVER['REQUEST_METHOD'];
+        $uri = rtrim($uri, '/');
 
-        if(!isset(self::$routes[$method][$uri])){
-            echo "Rota não encontrada";
+        if ($uri === '') {
+            $uri = '/';
+        }
+
+        $httpMethod = $_SERVER['REQUEST_METHOD'];
+
+        if (!isset(self::$routes[$httpMethod][$uri])) {
+            http_response_code(404);
+            echo "404 - Rota não encontrada";
             return;
         }
 
-        $action = self::$routes[$method][$uri];
+        $action = self::$routes[$httpMethod][$uri];
 
-        list($controller,$method) = explode('@',$action);
+        list($controller, $method) = explode('@', $action);
 
-        // CAMINHO DO CONTROLLER
         $controllerFile = __DIR__ . '/../app/controllers/' . $controller . '.php';
 
-        if(!file_exists($controllerFile)){
-            die("Controller não encontrado: " . $controllerFile);
+        if (!file_exists($controllerFile)) {
+            http_response_code(500);
+            die("Controller não encontrado: " . $controller);
         }
 
         require_once $controllerFile;
 
-        $controller = new $controller();
+        // rotas públicas
+        $publicRoutes = [
+            '/login',
+            '/authenticate'
+        ];
 
-        if(!method_exists($controller,$method)){
-            die("Método não encontrado: ".$method);
+        if (!in_array($uri, $publicRoutes)) {
+            AuthMiddleware::check();
         }
 
-        $controller->$method();
+        // verifica se a classe existe
+        if (!class_exists($controller)) {
+            http_response_code(500);
+            die("Classe do controller não encontrada: " . $controller);
+        }
 
+        $controllerInstance = new $controller();
+
+        // verifica se o método existe
+        if (!method_exists($controllerInstance, $method)) {
+            http_response_code(500);
+            die("Método não encontrado: " . $method);
+        }
+
+        call_user_func([$controllerInstance, $method]);
     }
-
 }

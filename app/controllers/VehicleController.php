@@ -6,11 +6,19 @@ class VehicleController {
 
     private $vehicleModel;
 
-    public function __construct() {
-        $this->vehicleModel = new VehicleModel();
+    public function __construct(){
+
+        if(!isset($_SESSION['company_id'])){
+            header("Location: /login");
+            exit;
+        }
+
+        $company_id = (int) $_SESSION['company_id'];
+
+        $this->vehicleModel = new VehicleModel($company_id);
     }
 
-    public function index() {
+    public function index(){
 
         $vehicles = $this->vehicleModel->all();
 
@@ -19,29 +27,36 @@ class VehicleController {
         require __DIR__ . '/../views/layout.php';
     }
 
-    public function create() {
+    public function create(){
 
         $view = 'vehicles/create';
 
         require __DIR__ . '/../views/layout.php';
     }
 
-    public function store() {
+    public function store(){
 
         $plate = $_POST['plate'] ?? '';
         $model = $_POST['model'] ?? '';
-        $brand = $_POST['brand'] ?? '';
-        $year = $_POST['year'] ?? '';
+        $year  = $_POST['year'] ?? null;
 
-        $this->vehicleModel->create($plate,$model,$brand,$year);
+        if(empty($plate) || empty($model)){
+            die("Placa e modelo são obrigatórios");
+        }
+
+        $this->vehicleModel->create($plate, $model, $year);
 
         header("Location: /vehicles");
         exit;
     }
 
-    public function delete($id) {
+    public function delete(){
 
-        $this->vehicleModel->delete($id);
+        $id = $_GET['id'] ?? null;
+
+        if($id){
+            $this->vehicleModel->delete($id);
+        }
 
         header("Location: /vehicles");
         exit;

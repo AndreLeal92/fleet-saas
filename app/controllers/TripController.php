@@ -1,68 +1,56 @@
 <?php
 
 require_once __DIR__ . '/../models/Trip.php';
-require_once __DIR__ . '/../models/DriverModel.php';
-require_once __DIR__ . '/../models/VehicleModel.php';
 
 class TripController {
 
     private $tripModel;
-    private $driverModel;
-    private $vehicleModel;
 
     public function __construct(){
 
-        $this->tripModel = new Trip();
-        $this->driverModel = new DriverModel();
-        $this->vehicleModel = new VehicleModel();
+        if(!isset($_SESSION['company_id'])){
+            header("Location: /login");
+            exit;
+        }
 
+        $company_id = (int) $_SESSION['company_id'];
+
+        $this->tripModel = new Trip($company_id);
     }
 
     public function index(){
 
+        // BUSCA AS VIAGENS
         $trips = $this->tripModel->all();
 
-        $view = 'trips/index';
+        // DEFINE VIEW
+        $view = 'Trips/index';
 
         require __DIR__ . '/../views/layout.php';
-
     }
 
     public function create(){
 
-        $drivers = $this->driverModel->all();
-        $vehicles = $this->vehicleModel->all();
+    $view = 'Trips/create';
 
-        $view = 'trips/create';
+    require __DIR__ . '/../views/layout.php';
 
-        require __DIR__ . '/../views/layout.php';
+}
 
-    }
+public function delete(){
 
-    public function store(){
+    $id = $_GET['id'] ?? null;
 
-        $this->tripModel->create(
-            $_POST['driver_id'],
-            $_POST['vehicle_id'],
-            $_POST['origin'],
-            $_POST['destination'],
-            $_POST['trip_date'],
-            $_POST['km_start'],
-            $_POST['km_end']
-        );
-
+    if(!$id){
         header("Location: /trips");
         exit;
-
     }
 
-    public function delete(){
+    $this->tripModel->delete($id);
 
-        $this->tripModel->delete($_GET['id']);
+    header("Location: /trips");
+    exit;
 
-        header("Location: /trips");
-        exit;
-
-    }
+}
 
 }

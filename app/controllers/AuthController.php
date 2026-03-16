@@ -8,18 +8,19 @@ class AuthController {
     private $authService;
     private $userModel;
 
-    public function __construct() {
-        $this->authService = new AuthService();
-        $this->userModel = new UserModel();
-    }
-
-    public function showLogin() {
+    public function __construct(){
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        if (isset($_SESSION['user'])) {
+        $this->authService = new AuthService();
+        $this->userModel = new UserModel();
+    }
+
+    public function showLogin(){
+
+        if(isset($_SESSION['user_id']) && isset($_SESSION['company_id'])){
             header("Location: /");
             exit;
         }
@@ -27,86 +28,44 @@ class AuthController {
         require __DIR__ . '/../views/login.php';
     }
 
-    public function authenticate() {
+    public function authenticate(){
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $email = $_POST['email'] ?? '';
+        $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+
+        if (!$email || !$password) {
+            header("Location: /login?error=empty");
+            exit;
+        }
 
         $user = $this->authService->login($email, $password);
 
         if ($user) {
 
-            // salvar usuário na sessão
-            $_SESSION['user'] = $user;
+            session_regenerate_id(true);
 
-            // verificar se precisa trocar senha
-            if ($user['must_change_password'] == 1) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['company_id'] = $user['company_id'];
+            $_SESSION['user_name'] = $user['name'];
+
+            if (!empty($user['must_change_password']) && $user['must_change_password'] == 1) {
+
                 header("Location: /change-password");
                 exit;
+
             }
 
             header("Location: /");
             exit;
+
         }
 
         header("Location: /login?error=1");
         exit;
+
     }
 
-    public function showChangePassword() {
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['user'])) {
-            header("Location: /login");
-            exit;
-        }
-
-        require __DIR__ . '/../views/change-password.php';
-    }
-
-    public function changePassword() {
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['user'])) {
-            header("Location: /login");
-            exit;
-        }
-
-        $password = $_POST['password'] ?? '';
-
-        if (!$password) {
-            header("Location: /change-password?error=1");
-            exit;
-        }
-
-        $userId = $_SESSION['user']['id'];
-
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-
-        $this->userModel->updatePassword($userId, $hash);
-
-        // atualizar sessão
-        $_SESSION['user']['must_change_password'] = 0;
-
-        header("Location: /");
-        exit;
-    }
-
-    public function logout() {
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+    public function logout(){
 
         $_SESSION = [];
 
@@ -123,12 +82,14 @@ class AuthController {
                 $params["secure"],
                 $params["httponly"]
             );
+
         }
 
         session_destroy();
 
         header("Location: /login");
         exit;
+
     }
 
 }

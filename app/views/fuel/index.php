@@ -1,6 +1,6 @@
 <h1>Abastecimentos</h1>
 
-<a href="/fuel/create">Novo Abastecimento</a>
+<a href="/fuel/create" class="btn">Novo Abastecimento</a>
 
 <table border="1">
 

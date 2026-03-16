@@ -1,6 +1,6 @@
 <h1>Veículos</h1>
 
-<a href="/vehicles/create">Novo Veículo</a>
+<a href="/vehicles/create" class="btn">Novo Veículo</a>
 
 <br><br>
 

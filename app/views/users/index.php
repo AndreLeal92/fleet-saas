@@ -1,6 +1,6 @@
 <h1>Usuários</h1>
 
-<a href="/users/create">Novo Usuário</a>
+<a href="/users/create" class="btn">Novo Usuário</a>
 
 <table border="1">
 

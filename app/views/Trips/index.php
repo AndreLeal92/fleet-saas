@@ -1,36 +1,48 @@
 <h1>Viagens</h1>
 
-<a href="/trips/create">Nova Viagem</a>
+<a href="/trips/create" style="display:inline-block;margin-bottom:15px;padding:8px 12px;background:#2563eb;color:white;text-decoration:none;border-radius:4px;">
+Nova Viagem
+</a>
 
-<table border="1">
+<table border="1" width="100%" cellpadding="10" style="background:white;border-collapse:collapse;">
 
-<tr>
-<th>ID</th>
+<tr style="background:#f3f4f6;">
+
 <th>Motorista</th>
 <th>Veículo</th>
 <th>Origem</th>
 <th>Destino</th>
-<th>KM Inicial</th>
-<th>KM Final</th>
 <th>Data</th>
+<th>KM</th>
 <th>Ações</th>
+
 </tr>
 
-<?php foreach($trips as $t): ?>
+<?php foreach($trips as $trip): ?>
 
 <tr>
 
-<td><?= $t['id'] ?></td>
-<td><?= $t['driver'] ?></td>
-<td><?= $t['vehicle'] ?></td>
-<td><?= $t['origin'] ?></td>
-<td><?= $t['destination'] ?></td>
-<td><?= $t['start_km'] ?></td>
-<td><?= $t['end_km'] ?></td>
-<td><?= $t['trip_date'] ?></td>
+<td><?= $trip['driver_name'] ?? '-' ?></td>
+<td><?= $trip['vehicle_plate'] ?? '-' ?></td>
+<td><?= $trip['origin'] ?></td>
+<td><?= $trip['destination'] ?></td>
+<td>
+<?= !empty($trip['date']) ? date('d/m/Y', strtotime($trip['date'])) : '-' ?>
+</td>
 
 <td>
-<a href="/trips/delete?id=<?= $t['id'] ?>">Excluir</a>
+<?= $trip['km'] ?? '-' ?>
+</td>
+
+<td>
+
+<a href="/trips/edit?id=<?= $trip['id'] ?>">Editar</a> |
+
+<a href="/trips/delete?id=<?= $trip['id'] ?>" 
+onclick="return confirm('Excluir esta viagem?')">
+Excluir
+</a>
+
 </td>
 
 </tr>

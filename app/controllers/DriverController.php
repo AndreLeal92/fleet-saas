@@ -44,13 +44,24 @@ class DriverController {
 
     }
 
-    public function delete($id){
+public function delete(){
 
-        $this->driverModel->delete($id);
+    $id = $_GET['id'] ?? null;
 
-        header("Location: /drivers");
-        exit;
+    if($id){
+
+        $deleted = $this->driverModel->delete($id);
+
+        if(!$deleted){
+            header("Location: /drivers?error=has_fuel");
+            exit;
+        }
 
     }
+
+    header("Location: /drivers");
+    exit;
+
+}
 
 }

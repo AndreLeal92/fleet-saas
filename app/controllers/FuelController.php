@@ -6,21 +6,32 @@ require_once __DIR__ . '/../models/DriverModel.php';
 
 class FuelController {
 
-    private $fuelModel;
+    private $fuelRecord;
     private $vehicleModel;
     private $driverModel;
 
     public function __construct(){
 
-        $this->fuelModel = new FuelRecord();
-        $this->vehicleModel = new VehicleModel();
-        $this->driverModel = new DriverModel();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if(!isset($_SESSION['company_id'])){
+            header("Location: /login");
+            exit;
+        }
+
+        $company_id = (int) $_SESSION['company_id'];
+
+        $this->fuelRecord   = new FuelRecord($company_id);
+        $this->vehicleModel = new VehicleModel($company_id);
+        $this->driverModel  = new DriverModel($company_id);
 
     }
 
     public function index(){
 
-        $records = $this->fuelModel->all();
+        $records = $this->fuelRecord->all();
 
         $view = 'fuel/index';
 
@@ -31,7 +42,7 @@ class FuelController {
     public function create(){
 
         $vehicles = $this->vehicleModel->all();
-        $drivers = $this->driverModel->all();
+        $drivers  = $this->driverModel->all();
 
         $view = 'fuel/create';
 
@@ -39,34 +50,13 @@ class FuelController {
 
     }
 
-    public function store(){
+    public function delete(){
 
-        $vehicle_id = $_POST['vehicle_id'];
-        $driver_id = $_POST['driver_id'];
-        $liters = $_POST['liters'];
-        $price = $_POST['price'];
-        $total = $_POST['total'];
-        $odometer = $_POST['odometer'];
-        $fuel_date = $_POST['fuel_date'];
+        $id = $_GET['id'] ?? null;
 
-        $this->fuelModel->create(
-            $vehicle_id,
-            $driver_id,
-            $liters,
-            $price,
-            $total,
-            $odometer,
-            $fuel_date
-        );
-
-        header("Location: /fuel");
-        exit;
-
-    }
-
-    public function delete($id){
-
-        $this->fuelModel->delete($id);
+        if($id){
+            $this->fuelRecord->delete($id);
+        }
 
         header("Location: /fuel");
         exit;

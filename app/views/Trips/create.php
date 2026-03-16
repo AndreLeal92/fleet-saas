@@ -1,40 +1,59 @@
-<h1>Viagens</h1>
+<h2>Nova Viagem</h2>
 
-<a href="/trips/create">Nova Viagem</a>
+<form method="POST" action="/trips/store">
 
-<table border="1">
+<label>Motorista</label>
 
-<tr>
-<th>ID</th>
-<th>Motorista</th>
-<th>Veículo</th>
-<th>Origem</th>
-<th>Destino</th>
-<th>KM Inicial</th>
-<th>KM Final</th>
-<th>Data</th>
-<th>Ações</th>
-</tr>
+<select name="driver_id">
 
-<?php foreach($trips as $t): ?>
+<?php foreach($drivers as $driver): ?>
 
-<tr>
-
-<td><?= $t['id'] ?></td>
-<td><?= $t['driver'] ?></td>
-<td><?= $t['vehicle'] ?></td>
-<td><?= $t['origin'] ?></td>
-<td><?= $t['destination'] ?></td>
-<td><?= $t['start_km'] ?></td>
-<td><?= $t['end_km'] ?></td>
-<td><?= $t['trip_date'] ?></td>
-
-<td>
-<a href="/trips/delete?id=<?= $t['id'] ?>">Excluir</a>
-</td>
-
-</tr>
+<option value="<?= $driver['id'] ?>">
+<?= $driver['name'] ?>
+</option>
 
 <?php endforeach; ?>
 
-</table>
+</select>
+
+
+<label>Veículo</label>
+
+<select name="vehicle_id">
+
+<?php foreach($vehicles as $vehicle): ?>
+
+<option value="<?= $vehicle['id'] ?>">
+<?= $vehicle['plate'] ?>
+</option>
+
+<?php endforeach; ?>
+
+</select>
+
+
+<label>Origem</label>
+<input type="text" name="origin">
+
+
+<label>Destino</label>
+<input type="text" name="destination">
+
+
+<label>Data</label>
+<input type="date" name="trip_date">
+
+
+<label>KM Inicial</label>
+<input type="number" name="km_start">
+
+
+<label>KM Final</label>
+<input type="number" name="km_end">
+
+
+<br><br>
+
+<button type="submit">Salvar</button>
+
+</form>

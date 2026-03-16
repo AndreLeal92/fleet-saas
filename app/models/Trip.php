@@ -7,53 +7,51 @@ class Trip {
     private $db;
 
     public function __construct(){
+
         $this->db = Database::getConnection();
+
     }
 
     public function all(){
 
-        $sql = "SELECT 
-                    t.*,
-                    d.name AS driver,
-                    v.plate AS vehicle
-                FROM trips t
-                LEFT JOIN drivers d ON d.id = t.driver_id
-                LEFT JOIN vehicles v ON v.id = t.vehicle_id
+        $sql = "SELECT trips.*, drivers.name driver_name, vehicles.plate vehicle_plate
+                FROM trips
+                LEFT JOIN drivers ON drivers.id = trips.driver_id
+                LEFT JOIN vehicles ON vehicles.id = trips.vehicle_id
                 ORDER BY trip_date DESC";
 
-        $stmt = $this->db->query($sql);
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create($driver,$vehicle,$origin,$destination,$start_km,$end_km,$date,$notes){
+    public function create($driver,$vehicle,$origin,$destination,$date,$km_start,$km_end){
 
         $sql = "INSERT INTO trips
-                (driver_id,vehicle_id,origin,destination,start_km,end_km,trip_date,notes)
-                VALUES
-                (:driver,:vehicle,:origin,:destination,:start_km,:end_km,:date,:notes)";
+                (driver_id,vehicle_id,origin,destination,trip_date,km_start,km_end)
+                VALUES (?,?,?,?,?,?,?)";
 
         $stmt = $this->db->prepare($sql);
 
-        $stmt->execute([
-            'driver'=>$driver,
-            'vehicle'=>$vehicle,
-            'origin'=>$origin,
-            'destination'=>$destination,
-            'start_km'=>$start_km,
-            'end_km'=>$end_km,
-            'date'=>$date,
-            'notes'=>$notes
+        return $stmt->execute([
+            $driver,
+            $vehicle,
+            $origin,
+            $destination,
+            $date,
+            $km_start,
+            $km_end
         ]);
+
     }
 
     public function delete($id){
 
-        $sql = "DELETE FROM trips WHERE id=:id";
+        $sql = "DELETE FROM trips WHERE id=?";
 
         $stmt = $this->db->prepare($sql);
 
-        $stmt->execute(['id'=>$id]);
+        return $stmt->execute([$id]);
+
     }
 
 }

@@ -41,31 +41,6 @@ text-decoration:none;
 background:#2563eb;
 }
 
-/* MENU DROPDOWN */
-
-.menu-item{
-padding:15px 20px;
-cursor:pointer;
-}
-
-.menu-item:hover{
-background:#2563eb;
-}
-
-.submenu{
-display:none;
-background:#1f2937;
-}
-
-.submenu a{
-padding:12px 40px;
-font-size:14px;
-}
-
-.submenu a:hover{
-background:#2563eb;
-}
-
 /* MAIN */
 
 .main{
@@ -73,23 +48,50 @@ margin-left:230px;
 padding:30px;
 }
 
-/* CARDS */
+/* BOTÕES */
+
+.btn{
+display:inline-block;
+padding:10px 18px;
+background:#2563eb;
+color:white;
+text-decoration:none;
+border-radius:6px;
+font-weight:500;
+margin-bottom:20px;
+}
+
+.btn:hover{
+background:#1d4ed8;
+}
+
+/* DASHBOARD CARDS */
 
 .cards{
 display:flex;
 gap:20px;
+flex-wrap:wrap;
+margin-top:20px;
 }
 
 .card{
 background:white;
 padding:25px;
 border-radius:10px;
-width:220px;
+width:200px;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
 .card h3{
 margin:0;
+font-size:16px;
+color:#374151;
+}
+
+.card p{
+font-size:28px;
+font-weight:bold;
+margin-top:10px;
 }
 
 </style>
@@ -105,50 +107,12 @@ margin:0;
 </div>
 
 <a href="/">Dashboard</a>
-
 <a href="/trip-expenses">Despesas de Viagem</a>
-
 <a href="/trips">Viagens</a>
-
-
-<!-- VEICULOS -->
-
-<div class="menu-item" onclick="toggleMenu('menuVeiculos')">
-Veículos ▾
-</div>
-
-<div id="menuVeiculos" class="submenu">
-<a href="/vehicles">Lista de Veículos</a>
-<a href="/maintenance">Manutenções</a>
-</div>
-
-
-<!-- MOTORISTAS -->
-
-<div class="menu-item" onclick="toggleMenu('menuMotoristas')">
-Motoristas ▾
-</div>
-
-<div id="menuMotoristas" class="submenu">
-<a href="/drivers">Lista de Motoristas</a>
-</div>
-
-
-<!-- ABASTECIMENTOS -->
-
+<a href="/vehicles">Veículos</a>
+<a href="/drivers">Motoristas</a>
 <a href="/fuel">Abastecimentos</a>
-
-
-<!-- USUARIOS -->
-
-<div class="menu-item" onclick="toggleMenu('menuUsuarios')">
-Usuários ▾
-</div>
-
-<div id="menuUsuarios" class="submenu">
-<a href="/users">Lista de Usuários</a>
-</div>
-
+<a href="/users">Usuários</a>
 <a href="/logout">Sair</a>
 
 </div>
@@ -158,23 +122,6 @@ Usuários ▾
 <?php require __DIR__ . '/' . $view . '.php'; ?>
 
 </div>
-
-
-<script>
-
-function toggleMenu(menuId){
-
-let menu = document.getElementById(menuId);
-
-if(menu.style.display === "block"){
-menu.style.display = "none";
-}else{
-menu.style.display = "block";
-}
-
-}
-
-</script>
 
 </body>
 </html>

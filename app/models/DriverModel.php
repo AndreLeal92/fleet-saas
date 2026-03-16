@@ -38,16 +38,25 @@ class DriverModel {
 
     }
 
-    public function delete($id){
+  public function delete($id){
 
-        $sql = "DELETE FROM drivers WHERE id=:id";
+    // verifica se existe abastecimento ligado ao motorista
+    $sql = "SELECT COUNT(*) FROM fuel_records WHERE driver_id = :id";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindValue(':id',$id);
+    $stmt->execute();
 
-        $stmt = $this->db->prepare($sql);
-
-        $stmt->execute([
-            'id'=>$id
-        ]);
-
+    if($stmt->fetchColumn() > 0){
+        return false;
     }
+
+    $sql = "DELETE FROM drivers WHERE id = :id AND company_id = :company_id";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindValue(':id',$id);
+    $stmt->bindValue(':company_id',$this->company_id);
+
+    return $stmt->execute();
+}
 
 }

@@ -6,123 +6,138 @@ class UserModel {
 
     private $db;
 
-    public function __construct() {
+    public function __construct(){
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         $this->db = Database::getConnection();
-
-    }
-
-    public function findByEmail($email) {
-
-        $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['email'=>$email]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-
-    }
-
-    public function findById($id){
-
-        $sql = "SELECT id,name,email,role FROM users WHERE id = :id";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id'=>$id]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-
     }
 
     public function all(){
 
-        $sql = "SELECT id,name,email,role FROM users";
+        $sql = "SELECT *
+                FROM users
+                WHERE company_id = :company_id
+                ORDER BY id DESC";
 
-        $stmt = $this->db->query($sql);
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'company_id' => $_SESSION['company_id']
+        ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     }
 
-    public function create($name,$email,$password,$role){
+    public function find($id){
 
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-        $sql = "INSERT INTO users (name,email,password,role,must_change_password)
-                VALUES (:name,:email,:password,:role,1)";
+        $sql = "SELECT *
+                FROM users
+                WHERE id = :id
+                AND company_id = :company_id";
 
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
-            'name'=>$name,
-            'email'=>$email,
-            'password'=>$passwordHash,
-            'role'=>$role
+            'id' => $id,
+            'company_id' => $_SESSION['company_id']
+        ]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    }
+
+    // 🔑 MÉTODO NECESSÁRIO PARA LOGIN
+    public function findByEmail($email){
+
+        $sql = "SELECT *
+                FROM users
+                WHERE email = :email
+                LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'email' => $email
+        ]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    }
+
+    public function create($name,$email,$password,$role){
+
+        $sql = "INSERT INTO users
+                (company_id,name,email,password,role,must_change_password)
+                VALUES
+                (:company_id,:name,:email,:password,:role,1)";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'company_id' => $_SESSION['company_id'],
+            'name'       => $name,
+            'email'      => $email,
+            'password'   => password_hash($password, PASSWORD_DEFAULT),
+            'role'       => $role
         ]);
 
     }
 
-    public function update($id,$name,$email,$role,$password){
+    public function update($id,$name,$email,$role){
 
-        if(!empty($password)){
-
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-            $sql = "UPDATE users
-                    SET name=:name,email=:email,role=:role,password=:password
-                    WHERE id=:id";
-
-            $stmt = $this->db->prepare($sql);
-
-            $stmt->execute([
-                'name'=>$name,
-                'email'=>$email,
-                'role'=>$role,
-                'password'=>$passwordHash,
-                'id'=>$id
-            ]);
-
-        } else {
-
-            $sql = "UPDATE users
-                    SET name=:name,email=:email,role=:role
-                    WHERE id=:id";
-
-            $stmt = $this->db->prepare($sql);
-
-            $stmt->execute([
-                'name'=>$name,
-                'email'=>$email,
-                'role'=>$role,
-                'id'=>$id
-            ]);
-
-        }
-
-    }
-
-    public function updatePassword($id,$password){
-
-        $sql = "UPDATE users 
-                SET password=:password,must_change_password=0
-                WHERE id=:id";
+        $sql = "UPDATE users
+                SET name = :name,
+                    email = :email,
+                    role = :role
+                WHERE id = :id
+                AND company_id = :company_id";
 
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
-            'password'=>$password,
-            'id'=>$id
+            'id'    => $id,
+            'name'  => $name,
+            'email' => $email,
+            'role'  => $role,
+            'company_id' => $_SESSION['company_id']
+        ]);
+
+    }
+
+    public function resetPassword($id,$password){
+
+        $sql = "UPDATE users
+                SET password = :password,
+                    must_change_password = 1
+                WHERE id = :id
+                AND company_id = :company_id";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'id'       => $id,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'company_id' => $_SESSION['company_id']
         ]);
 
     }
 
     public function delete($id){
 
-        $sql = "DELETE FROM users WHERE id=:id";
+        $sql = "DELETE FROM users
+                WHERE id = :id
+                AND company_id = :company_id";
 
         $stmt = $this->db->prepare($sql);
 
-        $stmt->execute(['id'=>$id]);
+        $stmt->execute([
+            'id' => $id,
+            'company_id' => $_SESSION['company_id']
+        ]);
 
     }
 

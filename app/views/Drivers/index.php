@@ -1,6 +1,14 @@
+<?php if(isset($_GET['error']) && $_GET['error'] == 'has_fuel'): ?>
+
+<div class="alert">
+Este motorista não pode ser excluído porque possui abastecimentos vinculados.
+</div>
+
+<?php endif; ?>
+
 <h1>Motoristas</h1>
 
-<a href="/drivers/create">Novo Motorista</a>
+<a href="/drivers/create" class="btn">Novo Motorista</a>
 
 <table border="1">
 
@@ -24,11 +32,7 @@
 <td><?= $driver['phone'] ?></td>
 
 <td>
-
-<a href="/drivers/delete?id=<?= $driver['id'] ?>">
-Excluir
-</a>
-
+<a href="/drivers/delete?id=<?= $driver['id'] ?>">Excluir</a>
 </td>
 
 </tr>
