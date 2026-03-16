@@ -22,6 +22,11 @@ class VehicleController {
         $this->vehicleModel = new VehicleModel($company_id);
     }
 
+
+    /* ================================
+       LISTAR VEÍCULOS
+    ================================= */
+
     public function index(){
 
         $vehicles = $this->vehicleModel->all();
@@ -31,29 +36,229 @@ class VehicleController {
         require __DIR__ . '/../views/layout.php';
     }
 
+
+    /* ================================
+       FORM NOVO VEÍCULO
+    ================================= */
+
     public function create(){
+
+        $fuelTypes = $this->vehicleModel->getFuelTypes();
+        $vehicleTypes = $this->vehicleModel->getVehicleTypes();
 
         $view = 'vehicles/create';
 
         require __DIR__ . '/../views/layout.php';
     }
 
+
+    /* ================================
+       SALVAR VEÍCULO
+    ================================= */
+
     public function store(){
 
         $plate = $_POST['plate'] ?? '';
-        $model = $_POST['model'] ?? '';
-        $brand = $_POST['brand'] ?? '';
-        $year  = $_POST['year'] ?? 0;
+        $vehicle_type = $_POST['vehicle_type'] ?? '';
 
-        if(empty($plate) || empty($model)){
-            die("Placa e modelo são obrigatórios");
+        $year_fab = $_POST['year_fab'] ?? null;
+        $brand = $_POST['brand'] ?? '';
+        $model = $_POST['model'] ?? '';
+
+        $renavam = $_POST['renavam'] ?? '';
+        $chassis = $_POST['chassis'] ?? '';
+
+        $fuel_type = $_POST['fuel_type'] ?? '';
+        $uses_arla32 = isset($_POST['uses_arla32']) ? 1 : 0;
+
+        $tire_size = $_POST['tire_size'] ?? '';
+
+        $fuel_tank_capacity = $_POST['fuel_tank_capacity'] ?? null;
+        $arla_tank_capacity = $_POST['arla_tank_capacity'] ?? null;
+
+        $cargo_capacity = $_POST['cargo_capacity'] ?? null;
+        $pbt = $_POST['pbt'] ?? null;
+
+        $owner_name = $_POST['owner_name'] ?? '';
+        $owner_document = $_POST['owner_document'] ?? '';
+        $owner_phone = $_POST['owner_phone'] ?? '';
+
+        $responsible_name = $_POST['responsible_name'] ?? '';
+        $owner_email = $_POST['owner_email'] ?? '';
+
+        $cep = $_POST['cep'] ?? '';
+        $logradouro = $_POST['logradouro'] ?? '';
+        $numero = $_POST['numero'] ?? '';
+        $bairro = $_POST['bairro'] ?? '';
+        $cidade = $_POST['cidade'] ?? '';
+        $estado = $_POST['estado'] ?? '';
+
+        $status = $_POST['status'] ?? 1;
+
+
+        /* =============================
+           UPLOAD CRLV
+        ============================== */
+
+        $crlvPath = null;
+
+        if(isset($_FILES['crlv_file']) && $_FILES['crlv_file']['error'] == 0){
+
+            $uploadDir = __DIR__ . '/../../public/uploads/crlv/';
+
+            if(!is_dir($uploadDir)){
+                mkdir($uploadDir,0777,true);
+            }
+
+            $fileName = time().'_'.$_FILES['crlv_file']['name'];
+
+            move_uploaded_file(
+                $_FILES['crlv_file']['tmp_name'],
+                $uploadDir.$fileName
+            );
+
+            $crlvPath = '/uploads/crlv/'.$fileName;
         }
 
-        $this->vehicleModel->create($plate, $model, $brand, $year);
+
+        if(empty($plate)){
+            die("Placa é obrigatória");
+        }
+
+
+        $this->vehicleModel->create(
+
+            $plate,
+            $vehicle_type,
+
+            $year_fab,
+            $brand,
+            $model,
+
+            $renavam,
+            $chassis,
+
+            $fuel_type,
+            $uses_arla32,
+
+            $tire_size,
+
+            $fuel_tank_capacity,
+            $arla_tank_capacity,
+
+            $cargo_capacity,
+            $pbt,
+
+            $owner_name,
+            $owner_document,
+            $owner_phone,
+
+            $responsible_name,
+            $owner_email,
+
+            $cep,
+            $logradouro,
+            $numero,
+            $bairro,
+            $cidade,
+            $estado,
+
+            $status,
+
+            $crlvPath
+        );
+
 
         header("Location: /vehicles");
         exit;
     }
+
+
+    /* ================================
+       EDITAR VEÍCULO
+    ================================= */
+
+    public function edit(){
+
+        $id = $_GET['id'] ?? null;
+
+        if(!$id){
+            die("Veículo não encontrado");
+        }
+
+        $vehicle = $this->vehicleModel->find((int)$id);
+
+        if(!$vehicle){
+            die("Veículo não encontrado");
+        }
+
+        $fuelTypes = $this->vehicleModel->getFuelTypes();
+        $vehicleTypes = $this->vehicleModel->getVehicleTypes();
+
+        $view = 'vehicles/edit';
+
+        require __DIR__ . '/../views/layout.php';
+    }
+
+
+    /* ================================
+       ATUALIZAR VEÍCULO
+    ================================= */
+
+    public function update(){
+
+        $id = $_POST['id'] ?? null;
+
+        if(!$id){
+            die("ID inválido");
+        }
+
+        $plate = $_POST['plate'] ?? '';
+        $vehicle_type = $_POST['vehicle_type'] ?? '';
+
+        $brand = $_POST['brand'] ?? '';
+        $model = $_POST['model'] ?? '';
+        $year_fab = $_POST['year_fab'] ?? null;
+
+
+        /* upload novo CRLV */
+
+        $crlvPath = $_POST['crlv_atual'] ?? null;
+
+        if(isset($_FILES['crlv_file']) && $_FILES['crlv_file']['error'] == 0){
+
+            $uploadDir = __DIR__ . '/../../public/uploads/crlv/';
+
+            $fileName = time().'_'.$_FILES['crlv_file']['name'];
+
+            move_uploaded_file(
+                $_FILES['crlv_file']['tmp_name'],
+                $uploadDir.$fileName
+            );
+
+            $crlvPath = '/uploads/crlv/'.$fileName;
+        }
+
+
+        $this->vehicleModel->updateVehicle(
+            $id,
+            $plate,
+            $vehicle_type,
+            $brand,
+            $model,
+            $year_fab,
+            $crlvPath
+        );
+
+
+        header("Location: /vehicles");
+        exit;
+    }
+
+
+    /* ================================
+       EXCLUIR VEÍCULO
+    ================================= */
 
     public function delete(){
 

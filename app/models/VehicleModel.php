@@ -7,19 +7,19 @@ class VehicleModel {
     private PDO $db;
     private int $company_id;
 
-    /**
-     * Construtor exige o ID da empresa
-     */
-    public function __construct(int $company_id) {
+
+    public function __construct(int $company_id){
 
         $this->db = Database::getConnection();
         $this->company_id = $company_id;
 
     }
 
-    /**
-     * Lista todos os veículos da empresa
-     */
+
+    /* =========================================
+       LISTAR VEÍCULOS
+    ========================================= */
+
     public function all(): array {
 
         $sql = "SELECT *
@@ -36,9 +36,11 @@ class VehicleModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Busca um veículo
-     */
+
+    /* =========================================
+       BUSCAR VEÍCULO
+    ========================================= */
+
     public function find(int $id): ?array {
 
         $sql = "SELECT *
@@ -59,55 +61,223 @@ class VehicleModel {
         return $vehicle ?: null;
     }
 
-    /**
-     * Cria veículo
-     */
-    public function create(string $plate, string $model, string $brand, int $year): bool {
 
-        $sql = "INSERT INTO vehicles
-                (company_id, plate, model, brand, year)
-                VALUES
-                (:company_id, :plate, :model, :brand, :year)";
+    /* =========================================
+       CRIAR VEÍCULO
+    ========================================= */
+
+    public function create(
+
+        $plate,
+        $year_fab,
+        $brand,
+        $model,
+
+        $renavam,
+        $chassis,
+
+        $fuel_type,
+        $uses_arla32,
+
+        $tire_size,
+
+        $fuel_tank_capacity,
+        $arla_tank_capacity,
+
+        $cargo_capacity,
+        $pbt,
+
+        $owner_name,
+        $owner_document,
+        $owner_phone,
+
+        $responsible_name,
+        $owner_email,
+
+        $cep,
+        $logradouro,
+        $numero,
+        $bairro,
+        $cidade,
+        $estado,
+
+        $status,
+
+        $crlv_file
+
+    ): bool {
+
+        $sql = "INSERT INTO vehicles (
+
+            company_id,
+
+            plate,
+            year_fab,
+            brand,
+            model,
+
+            renavam,
+            chassis,
+
+            fuel_type,
+            uses_arla32,
+
+            tire_size,
+
+            fuel_tank_capacity,
+            arla_tank_capacity,
+
+            cargo_capacity,
+            pbt,
+
+            owner_name,
+            owner_document,
+            owner_phone,
+
+            responsible_name,
+            owner_email,
+
+            cep,
+            logradouro,
+            numero,
+            bairro,
+            cidade,
+            estado,
+
+            status,
+            crlv_file
+
+        )
+
+        VALUES (
+
+            :company_id,
+
+            :plate,
+            :year_fab,
+            :brand,
+            :model,
+
+            :renavam,
+            :chassis,
+
+            :fuel_type,
+            :uses_arla32,
+
+            :tire_size,
+
+            :fuel_tank_capacity,
+            :arla_tank_capacity,
+
+            :cargo_capacity,
+            :pbt,
+
+            :owner_name,
+            :owner_document,
+            :owner_phone,
+
+            :responsible_name,
+            :owner_email,
+
+            :cep,
+            :logradouro,
+            :numero,
+            :bairro,
+            :cidade,
+            :estado,
+
+            :status,
+            :crlv_file
+        )";
 
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
+
             'company_id' => $this->company_id,
-            'plate'      => $plate,
-            'model'      => $model,
-            'brand'      => $brand,
-            'year'       => $year
+
+            'plate' => $plate,
+            'year_fab' => $year_fab,
+            'brand' => $brand,
+            'model' => $model,
+
+            'renavam' => $renavam,
+            'chassis' => $chassis,
+
+            'fuel_type' => $fuel_type,
+            'uses_arla32' => $uses_arla32,
+
+            'tire_size' => $tire_size,
+
+            'fuel_tank_capacity' => $fuel_tank_capacity,
+            'arla_tank_capacity' => $arla_tank_capacity,
+
+            'cargo_capacity' => $cargo_capacity,
+            'pbt' => $pbt,
+
+            'owner_name' => $owner_name,
+            'owner_document' => $owner_document,
+            'owner_phone' => $owner_phone,
+
+            'responsible_name' => $responsible_name,
+            'owner_email' => $owner_email,
+
+            'cep' => $cep,
+            'logradouro' => $logradouro,
+            'numero' => $numero,
+            'bairro' => $bairro,
+            'cidade' => $cidade,
+            'estado' => $estado,
+
+            'status' => $status,
+            'crlv_file' => $crlv_file
         ]);
     }
 
-    /**
-     * Atualiza veículo
-     */
-    public function update(int $id, string $plate, string $model, string $brand, int $year): bool {
+
+    /* =========================================
+       ATUALIZAR VEÍCULO
+    ========================================= */
+
+    public function updateVehicle(
+        $id,
+        $plate,
+        $brand,
+        $model,
+        $year_fab,
+        $crlv_file
+    ){
 
         $sql = "UPDATE vehicles
-                SET plate = :plate,
-                    model = :model,
-                    brand = :brand,
-                    year = :year
+                SET
+
+                plate = :plate,
+                brand = :brand,
+                model = :model,
+                year_fab = :year_fab,
+                crlv_file = :crlv_file
+
                 WHERE id = :id
                 AND company_id = :company_id";
 
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
-            'id'         => $id,
-            'company_id' => $this->company_id,
-            'plate'      => $plate,
-            'model'      => $model,
-            'brand'      => $brand,
-            'year'       => $year
+            'plate'=>$plate,
+            'brand'=>$brand,
+            'model'=>$model,
+            'year_fab'=>$year_fab,
+            'crlv_file'=>$crlv_file,
+            'id'=>$id,
+            'company_id'=>$this->company_id
         ]);
     }
 
-    /**
-     * Remove veículo
-     */
+
+    /* =========================================
+       REMOVER VEÍCULO
+    ========================================= */
+
     public function delete(int $id): bool {
 
         $sql = "DELETE FROM vehicles
@@ -120,6 +290,52 @@ class VehicleModel {
             'id' => $id,
             'company_id' => $this->company_id
         ]);
+    }
+
+
+    /* =========================================
+       TIPOS DE COMBUSTÍVEL
+    ========================================= */
+
+    public function getFuelTypes(){
+
+        $sql = "SELECT DISTINCT fuel_type
+                FROM vehicles
+                WHERE fuel_type IS NOT NULL
+                AND fuel_type != ''
+                AND company_id = :company_id
+                ORDER BY fuel_type";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'company_id'=>$this->company_id
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    /* =========================================
+       TIPOS DE VEÍCULO
+    ========================================= */
+
+    public function getVehicleTypes(){
+
+        $sql = "SELECT DISTINCT vehicle_type
+                FROM vehicles
+                WHERE vehicle_type IS NOT NULL
+                AND vehicle_type != ''
+                AND company_id = :company_id
+                ORDER BY vehicle_type";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'company_id'=>$this->company_id
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }

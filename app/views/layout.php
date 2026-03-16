@@ -98,62 +98,77 @@ padding:0 20px;
 padding:30px;
 }
 
-/* DASHBOARD */
+/* BOTÕES */
 
-.dashboard-cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-margin-bottom:30px;
+.btn{
+display:inline-block;
+padding:10px 16px;
+background:#2563eb;
+color:white;
+text-decoration:none;
+border-radius:6px;
+border:none;
+cursor:pointer;
 }
 
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
+.btn:hover{
+background:#1e4ed8;
 }
 
-.card-info h3{
-margin:0;
-font-size:14px;
-color:#6b7280;
-}
+/* FORMULÁRIOS */
 
-.card-info p{
-font-size:28px;
-font-weight:bold;
-margin-top:5px;
-}
-
-.card-icon{
-font-size:32px;
-}
-
-/* cores */
-
-.blue{border-left:5px solid #2563eb;}
-.green{border-left:5px solid #10b981;}
-.orange{border-left:5px solid #f59e0b;}
-.purple{border-left:5px solid #8b5cf6;}
-.red{border-left:5px solid #ef4444;}
-
-/* charts */
-
-.charts{
+.form-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:20px;
-}
-
-.chart-box{
+gap:15px;
 background:white;
 padding:20px;
 border-radius:10px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
+margin-bottom:20px;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.form-grid h3{
+grid-column:1/3;
+margin-bottom:10px;
+}
+
+input,select{
+padding:10px;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+/* TABELAS */
+
+.table-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
+margin-top:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+table th{
+background:#f3f4f6;
+padding:12px;
+text-align:left;
+font-size:14px;
+}
+
+table td{
+padding:12px;
+border-bottom:1px solid #eee;
+}
+
+table tr:hover{
+background:#f9fafb;
 }
 
 </style>
@@ -232,20 +247,55 @@ style="<?= (strpos($current,'/vehicles')!==false || strpos($current,'/drivers')!
 
 <script>
 
-/* dropdown */
+/* DROPDOWN MENU */
 
-var dropdown = document.getElementsByClassName("dropdown-btn");
+function initDropdown(){
 
-for (var i = 0; i < dropdown.length; i++) {
+var dropdown=document.getElementsByClassName("dropdown-btn");
 
-dropdown[i].addEventListener("click", function() {
+for(var i=0;i<dropdown.length;i++){
 
-var dropdownContent = this.nextElementSibling;
+dropdown[i].onclick=function(){
 
-dropdownContent.style.display =
-dropdownContent.style.display === "block"
-? "none"
-: "block";
+var dropdownContent=this.nextElementSibling;
+
+dropdownContent.style.display=
+dropdownContent.style.display==="block"
+?"none"
+:"block";
+
+};
+
+}
+
+}
+
+/* CEP AUTOMÁTICO */
+
+function initCep(){
+
+const cepInput=document.getElementById("cep");
+
+if(!cepInput) return;
+
+cepInput.addEventListener("blur",function(){
+
+let cep=this.value.replace(/\D/g,'');
+
+if(cep.length!==8) return;
+
+fetch("https://viacep.com.br/ws/"+cep+"/json/")
+.then(res=>res.json())
+.then(data=>{
+
+if(data.erro) return;
+
+document.getElementById("logradouro").value=data.logradouro || "";
+document.getElementById("bairro").value=data.bairro || "";
+document.getElementById("cidade").value=data.localidade || "";
+document.getElementById("estado").value=data.uf || "";
+
+});
 
 });
 
@@ -266,7 +316,14 @@ let doc=parser.parseFromString(html,"text/html");
 let newContent=doc.querySelector("#app-content");
 
 if(newContent){
+
 container.innerHTML=newContent.innerHTML;
+
+/* reinicializa scripts */
+
+initCep();
+initDropdown();
+
 }
 
 if(push){
@@ -296,6 +353,15 @@ loadPage(url);
 
 window.addEventListener("popstate",function(){
 loadPage(location.pathname,false);
+});
+
+/* inicialização inicial */
+
+document.addEventListener("DOMContentLoaded",function(){
+
+initCep();
+initDropdown();
+
 });
 
 </script>
