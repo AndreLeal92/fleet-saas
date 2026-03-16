@@ -1,12 +1,20 @@
 <?php
 
 require_once __DIR__ . '/../models/Trip.php';
+require_once __DIR__ . '/../models/DriverModel.php';
+require_once __DIR__ . '/../models/VehicleModel.php';
 
 class TripController {
 
     private $tripModel;
+    private $driverModel;
+    private $vehicleModel;
 
     public function __construct(){
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         if(!isset($_SESSION['company_id'])){
             header("Location: /login");
@@ -15,15 +23,16 @@ class TripController {
 
         $company_id = (int) $_SESSION['company_id'];
 
-        $this->tripModel = new Trip($company_id);
+        $this->tripModel    = new Trip($company_id);
+        $this->driverModel  = new DriverModel($company_id);
+        $this->vehicleModel = new VehicleModel($company_id);
+
     }
 
     public function index(){
 
-        // BUSCA AS VIAGENS
         $trips = $this->tripModel->all();
 
-        // DEFINE VIEW
         $view = 'Trips/index';
 
         require __DIR__ . '/../views/layout.php';
@@ -31,26 +40,28 @@ class TripController {
 
     public function create(){
 
-    $view = 'Trips/create';
+        // busca motoristas e veículos
+        $drivers  = $this->driverModel->all();
+        $vehicles = $this->vehicleModel->all();
 
-    require __DIR__ . '/../views/layout.php';
+        $view = 'Trips/create';
 
-}
+        require __DIR__ . '/../views/layout.php';
+    }
 
-public function delete(){
+    public function delete(){
 
-    $id = $_GET['id'] ?? null;
+        $id = $_GET['id'] ?? null;
 
-    if(!$id){
+        if(!$id){
+            header("Location: /trips");
+            exit;
+        }
+
+        $this->tripModel->delete((int)$id);
+
         header("Location: /trips");
         exit;
     }
-
-    $this->tripModel->delete($id);
-
-    header("Location: /trips");
-    exit;
-
-}
 
 }

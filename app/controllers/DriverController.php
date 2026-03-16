@@ -6,9 +6,20 @@ class DriverController {
 
     private $driverModel;
 
-    public function __construct() {
+    public function __construct(){
 
-        $this->driverModel = new DriverModel();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if(!isset($_SESSION['company_id'])){
+            header("Location: /login");
+            exit;
+        }
+
+        $company_id = (int) $_SESSION['company_id'];
+
+        $this->driverModel = new DriverModel($company_id);
 
     }
 
@@ -32,10 +43,14 @@ class DriverController {
 
     public function store(){
 
-        $name = $_POST['name'] ?? '';
-        $cpf = $_POST['cpf'] ?? '';
-        $cnh = $_POST['cnh'] ?? '';
+        $name  = $_POST['name'] ?? '';
+        $cpf   = $_POST['cpf'] ?? '';
+        $cnh   = $_POST['cnh'] ?? '';
         $phone = $_POST['phone'] ?? '';
+
+        if(empty($name)){
+            die("Nome é obrigatório");
+        }
 
         $this->driverModel->create($name,$cpf,$cnh,$phone);
 
@@ -44,24 +59,24 @@ class DriverController {
 
     }
 
-public function delete(){
+    public function delete(){
 
-    $id = $_GET['id'] ?? null;
+        $id = $_GET['id'] ?? null;
 
-    if($id){
+        if($id){
 
-        $deleted = $this->driverModel->delete($id);
+            $deleted = $this->driverModel->delete($id);
 
-        if(!$deleted){
-            header("Location: /drivers?error=has_fuel");
-            exit;
+            if(!$deleted){
+                header("Location: /drivers?error=has_fuel");
+                exit;
+            }
+
         }
 
+        header("Location: /drivers");
+        exit;
+
     }
-
-    header("Location: /drivers");
-    exit;
-
-}
 
 }

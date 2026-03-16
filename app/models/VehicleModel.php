@@ -8,8 +8,7 @@ class VehicleModel {
     private int $company_id;
 
     /**
-     * Construtor exige o ID da empresa para garantir
-     * isolamento de dados no SaaS.
+     * Construtor exige o ID da empresa
      */
     public function __construct(int $company_id) {
 
@@ -35,11 +34,10 @@ class VehicleModel {
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
 
     /**
-     * Busca um veículo específico
+     * Busca um veículo
      */
     public function find(int $id): ?array {
 
@@ -59,11 +57,10 @@ class VehicleModel {
         $vehicle = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $vehicle ?: null;
-
     }
 
     /**
-     * Cria um novo veículo
+     * Cria veículo
      */
     public function create(string $plate, string $model, string $brand, int $year): bool {
 
@@ -81,7 +78,6 @@ class VehicleModel {
             'brand'      => $brand,
             'year'       => $year
         ]);
-
     }
 
     /**
@@ -107,7 +103,6 @@ class VehicleModel {
             'brand'      => $brand,
             'year'       => $year
         ]);
-
     }
 
     /**
@@ -125,7 +120,6 @@ class VehicleModel {
             'id' => $id,
             'company_id' => $this->company_id
         ]);
-
     }
 
 }

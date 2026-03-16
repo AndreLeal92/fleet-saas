@@ -8,6 +8,10 @@ class VehicleController {
 
     public function __construct(){
 
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         if(!isset($_SESSION['company_id'])){
             header("Location: /login");
             exit;
@@ -38,13 +42,14 @@ class VehicleController {
 
         $plate = $_POST['plate'] ?? '';
         $model = $_POST['model'] ?? '';
-        $year  = $_POST['year'] ?? null;
+        $brand = $_POST['brand'] ?? '';
+        $year  = $_POST['year'] ?? 0;
 
         if(empty($plate) || empty($model)){
             die("Placa e modelo são obrigatórios");
         }
 
-        $this->vehicleModel->create($plate, $model, $year);
+        $this->vehicleModel->create($plate, $model, $brand, $year);
 
         header("Location: /vehicles");
         exit;
@@ -55,7 +60,7 @@ class VehicleController {
         $id = $_GET['id'] ?? null;
 
         if($id){
-            $this->vehicleModel->delete($id);
+            $this->vehicleModel->delete((int)$id);
         }
 
         header("Location: /vehicles");
