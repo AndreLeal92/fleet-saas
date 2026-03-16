@@ -22,7 +22,6 @@ class VehicleController {
         $this->vehicleModel = new VehicleModel($company_id);
     }
 
-
     /* ================================
        LISTAR VEÍCULOS
     ================================= */
@@ -35,7 +34,6 @@ class VehicleController {
 
         require __DIR__ . '/../views/layout.php';
     }
-
 
     /* ================================
        FORM NOVO VEÍCULO
@@ -51,19 +49,17 @@ class VehicleController {
         require __DIR__ . '/../views/layout.php';
     }
 
-
     /* ================================
        SALVAR VEÍCULO
     ================================= */
 
     public function store(){
 
-        $plate = $_POST['plate'] ?? '';
-        $vehicle_type = $_POST['vehicle_type'] ?? '';
-
+        $plate = trim($_POST['plate'] ?? '');
         $year_fab = $_POST['year_fab'] ?? null;
-        $brand = $_POST['brand'] ?? '';
-        $model = $_POST['model'] ?? '';
+
+        $brand = trim($_POST['brand'] ?? '');
+        $model = trim($_POST['model'] ?? '');
 
         $renavam = $_POST['renavam'] ?? '';
         $chassis = $_POST['chassis'] ?? '';
@@ -95,10 +91,7 @@ class VehicleController {
 
         $status = $_POST['status'] ?? 1;
 
-
-        /* =============================
-           UPLOAD CRLV
-        ============================== */
+        /* UPLOAD CRLV */
 
         $crlvPath = null;
 
@@ -110,7 +103,7 @@ class VehicleController {
                 mkdir($uploadDir,0777,true);
             }
 
-            $fileName = time().'_'.$_FILES['crlv_file']['name'];
+            $fileName = time().'_'.basename($_FILES['crlv_file']['name']);
 
             move_uploaded_file(
                 $_FILES['crlv_file']['tmp_name'],
@@ -120,17 +113,13 @@ class VehicleController {
             $crlvPath = '/uploads/crlv/'.$fileName;
         }
 
-
         if(empty($plate)){
             die("Placa é obrigatória");
         }
 
-
         $this->vehicleModel->create(
 
             $plate,
-            $vehicle_type,
-
             $year_fab,
             $brand,
             $model,
@@ -168,11 +157,9 @@ class VehicleController {
             $crlvPath
         );
 
-
         header("Location: /vehicles");
         exit;
     }
-
 
     /* ================================
        EDITAR VEÍCULO
@@ -200,7 +187,6 @@ class VehicleController {
         require __DIR__ . '/../views/layout.php';
     }
 
-
     /* ================================
        ATUALIZAR VEÍCULO
     ================================= */
@@ -214,14 +200,9 @@ class VehicleController {
         }
 
         $plate = $_POST['plate'] ?? '';
-        $vehicle_type = $_POST['vehicle_type'] ?? '';
-
+        $year_fab = $_POST['year_fab'] ?? null;
         $brand = $_POST['brand'] ?? '';
         $model = $_POST['model'] ?? '';
-        $year_fab = $_POST['year_fab'] ?? null;
-
-
-        /* upload novo CRLV */
 
         $crlvPath = $_POST['crlv_atual'] ?? null;
 
@@ -229,7 +210,11 @@ class VehicleController {
 
             $uploadDir = __DIR__ . '/../../public/uploads/crlv/';
 
-            $fileName = time().'_'.$_FILES['crlv_file']['name'];
+            if(!is_dir($uploadDir)){
+                mkdir($uploadDir,0777,true);
+            }
+
+            $fileName = time().'_'.basename($_FILES['crlv_file']['name']);
 
             move_uploaded_file(
                 $_FILES['crlv_file']['tmp_name'],
@@ -239,22 +224,18 @@ class VehicleController {
             $crlvPath = '/uploads/crlv/'.$fileName;
         }
 
-
         $this->vehicleModel->updateVehicle(
             $id,
             $plate,
-            $vehicle_type,
             $brand,
             $model,
             $year_fab,
             $crlvPath
         );
 
-
         header("Location: /vehicles");
         exit;
     }
-
 
     /* ================================
        EXCLUIR VEÍCULO

@@ -7,14 +7,12 @@ class VehicleModel {
     private PDO $db;
     private int $company_id;
 
-
     public function __construct(int $company_id){
 
         $this->db = Database::getConnection();
         $this->company_id = $company_id;
 
     }
-
 
     /* =========================================
        LISTAR VEÍCULOS
@@ -35,7 +33,6 @@ class VehicleModel {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
     /* =========================================
        BUSCAR VEÍCULO
@@ -60,7 +57,6 @@ class VehicleModel {
 
         return $vehicle ?: null;
     }
-
 
     /* =========================================
        CRIAR VEÍCULO
@@ -102,10 +98,11 @@ class VehicleModel {
         $estado,
 
         $status,
-
         $crlv_file
 
     ): bool {
+
+        $year_fab = (int)$year_fab;
 
         $sql = "INSERT INTO vehicles (
 
@@ -234,19 +231,20 @@ class VehicleModel {
         ]);
     }
 
-
     /* =========================================
        ATUALIZAR VEÍCULO
     ========================================= */
 
     public function updateVehicle(
-        $id,
-        $plate,
-        $brand,
-        $model,
+        int $id,
+        string $plate,
+        string $brand,
+        string $model,
         $year_fab,
-        $crlv_file
-    ){
+        ?string $crlv_file
+    ): bool{
+
+        $year_fab = (int)$year_fab;
 
         $sql = "UPDATE vehicles
                 SET
@@ -258,7 +256,8 @@ class VehicleModel {
                 crlv_file = :crlv_file
 
                 WHERE id = :id
-                AND company_id = :company_id";
+                AND company_id = :company_id
+                LIMIT 1";
 
         $stmt = $this->db->prepare($sql);
 
@@ -273,7 +272,6 @@ class VehicleModel {
         ]);
     }
 
-
     /* =========================================
        REMOVER VEÍCULO
     ========================================= */
@@ -282,7 +280,8 @@ class VehicleModel {
 
         $sql = "DELETE FROM vehicles
                 WHERE id = :id
-                AND company_id = :company_id";
+                AND company_id = :company_id
+                LIMIT 1";
 
         $stmt = $this->db->prepare($sql);
 
@@ -292,12 +291,11 @@ class VehicleModel {
         ]);
     }
 
-
     /* =========================================
        TIPOS DE COMBUSTÍVEL
     ========================================= */
 
-    public function getFuelTypes(){
+    public function getFuelTypes(): array{
 
         $sql = "SELECT DISTINCT fuel_type
                 FROM vehicles
@@ -315,12 +313,11 @@ class VehicleModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
     /* =========================================
        TIPOS DE VEÍCULO
     ========================================= */
 
-    public function getVehicleTypes(){
+    public function getVehicleTypes(): array{
 
         $sql = "SELECT DISTINCT vehicle_type
                 FROM vehicles
