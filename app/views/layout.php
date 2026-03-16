@@ -6,6 +6,8 @@
 <meta charset="UTF-8">
 <title>NeoFleet</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 body{
@@ -22,12 +24,6 @@ height:100vh;
 background:#111827;
 color:white;
 position:fixed;
-transition:width .2s;
-overflow:hidden;
-}
-
-.sidebar.collapsed{
-width:70px;
 }
 
 .sidebar-title{
@@ -38,10 +34,9 @@ border-bottom:1px solid #333;
 
 .sidebar a{
 display:block;
-padding:15px 20px;
+padding:14px 20px;
 color:white;
 text-decoration:none;
-white-space:nowrap;
 }
 
 .sidebar a:hover{
@@ -53,16 +48,36 @@ background:#2563eb;
 font-weight:bold;
 }
 
+/* DROPDOWN */
+
+.dropdown-btn{
+width:100%;
+background:none;
+border:none;
+color:white;
+padding:14px 20px;
+text-align:left;
+cursor:pointer;
+font-size:15px;
+}
+
+.dropdown-btn:hover{
+background:#2563eb;
+}
+
+.dropdown-container{
+display:none;
+background:#1f2937;
+}
+
+.dropdown-container a{
+padding-left:40px;
+}
+
 /* MAIN */
 
 .main{
 margin-left:230px;
-padding:30px;
-transition:margin-left .2s;
-}
-
-.sidebar.collapsed + .main{
-margin-left:70px;
 }
 
 /* TOPBAR */
@@ -77,56 +92,68 @@ justify-content:space-between;
 padding:0 20px;
 }
 
-.toggle-btn{
-cursor:pointer;
-font-size:20px;
+/* CONTENT */
+
+.content{
+padding:30px;
 }
 
-/* LOADER */
+/* DASHBOARD */
 
-.loader{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:3px;
-background:#2563eb;
-transform:scaleX(0);
-transform-origin:left;
-transition:transform .3s;
-}
-
-.loader.active{
-transform:scaleX(1);
-}
-
-/* CARDS */
-
-.cards{
-display:flex;
+.dashboard-cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:20px;
-flex-wrap:wrap;
-margin-top:20px;
+margin-bottom:30px;
 }
 
 .card{
 background:white;
-padding:25px;
+padding:20px;
 border-radius:10px;
-width:200px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
-.card h3{
+.card-info h3{
 margin:0;
-font-size:16px;
-color:#374151;
+font-size:14px;
+color:#6b7280;
 }
 
-.card p{
+.card-info p{
 font-size:28px;
 font-weight:bold;
-margin-top:10px;
+margin-top:5px;
+}
+
+.card-icon{
+font-size:32px;
+}
+
+/* cores */
+
+.blue{border-left:5px solid #2563eb;}
+.green{border-left:5px solid #10b981;}
+.orange{border-left:5px solid #f59e0b;}
+.purple{border-left:5px solid #8b5cf6;}
+.red{border-left:5px solid #ef4444;}
+
+/* charts */
+
+.charts{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 </style>
@@ -135,54 +162,66 @@ margin-top:10px;
 
 <body>
 
-<div class="loader" id="loader"></div>
-
 <?php
 $current = $_SERVER['REQUEST_URI'];
 ?>
 
-<div class="sidebar" id="sidebar">
+<div class="sidebar">
 
 <div class="sidebar-title">
-<img src="/assets/images/Neofleet_branco.png" style="width:150px;">
+<img src="/assets/images/Neofleet_branco.png" style="width:170px;">
 </div>
 
-<a href="/" class="<?= $current == '/' ? 'active' : '' ?>">🏠 Dashboard</a>
+<a href="/" class="<?= $current=='/'?'active':'' ?>">🏠 Dashboard</a>
 
-<a href="/trips" class="<?= strpos($current,'/trips')!==false ? 'active' : '' ?>">🚚 Viagens</a>
+<button class="dropdown-btn">🚚 Operação</button>
 
-<a href="/fuel" class="<?= strpos($current,'/fuel')!==false ? 'active' : '' ?>">⛽ Abastecimentos</a>
+<div class="dropdown-container"
+style="<?= (strpos($current,'/trips')!==false || strpos($current,'/fuel')!==false) ? 'display:block':'' ?>">
 
-<a href="/trip-expenses/create" class="<?= strpos($current,'/trip-expenses')!==false ? 'active' : '' ?>">💰 Despesas</a>
+<a href="/trips">Viagens</a>
+<a href="/fuel">Abastecimentos</a>
+<a href="/trip-expenses/create">Despesas</a>
 
-<a href="/trip-report" class="<?= strpos($current,'/trip-report')!==false ? 'active' : '' ?>">📊 Relatório</a>
+</div>
 
-<a href="/vehicles" class="<?= strpos($current,'/vehicles')!==false ? 'active' : '' ?>">🚛 Veículos</a>
+<button class="dropdown-btn">📊 Relatórios</button>
 
-<a href="/drivers" class="<?= strpos($current,'/drivers')!==false ? 'active' : '' ?>">👨‍✈️ Motoristas</a>
+<div class="dropdown-container"
+style="<?= strpos($current,'/trip-report')!==false?'display:block':'' ?>">
 
-<a href="/users" class="<?= strpos($current,'/users')!==false ? 'active' : '' ?>">👥 Usuários</a>
+<a href="/trip-report">Relatório de Viagens</a>
+
+</div>
+
+<button class="dropdown-btn">📁 Cadastros</button>
+
+<div class="dropdown-container"
+style="<?= (strpos($current,'/vehicles')!==false || strpos($current,'/drivers')!==false || strpos($current,'/users')!==false)?'display:block':'' ?>">
+
+<a href="/vehicles">Veículos</a>
+<a href="/drivers">Motoristas</a>
+<a href="/users">Usuários</a>
+
+</div>
 
 <a href="/logout">🚪 Sair</a>
 
 </div>
 
-
 <div class="main">
 
 <div class="topbar">
 
-<div class="toggle-btn" onclick="toggleSidebar()">
-☰
-</div>
+<div style="font-size:20px;">☰</div>
 
 <div>
-<?php echo $_SESSION['user_name'] ?? 'Usuário'; ?>
+<?= $_SESSION['user_name'] ?? 'Admin' ?>
 </div>
 
 </div>
 
-<div id="app-content">
+<div class="content" id="app-content">
 
 <?php require __DIR__ . '/' . $view . '.php'; ?>
 
@@ -193,50 +232,56 @@ $current = $_SERVER['REQUEST_URI'];
 
 <script>
 
-/* SIDEBAR */
+/* dropdown */
 
-function toggleSidebar(){
-document.getElementById("sidebar").classList.toggle("collapsed");
+var dropdown = document.getElementsByClassName("dropdown-btn");
+
+for (var i = 0; i < dropdown.length; i++) {
+
+dropdown[i].addEventListener("click", function() {
+
+var dropdownContent = this.nextElementSibling;
+
+dropdownContent.style.display =
+dropdownContent.style.display === "block"
+? "none"
+: "block";
+
+});
+
 }
 
+/* SPA */
 
-/* SPA NAV */
+function loadPage(url,push=true){
 
-function loadPage(url, push=true){
-
-const container = document.getElementById("app-content");
-const loader = document.getElementById("loader");
-
-loader.classList.add("active");
+const container=document.getElementById("app-content");
 
 fetch(url)
-.then(res => res.text())
-.then(html => {
+.then(res=>res.text())
+.then(html=>{
 
-let parser = new DOMParser();
-let doc = parser.parseFromString(html,"text/html");
-
-let newContent = doc.querySelector("#app-content");
+let parser=new DOMParser();
+let doc=parser.parseFromString(html,"text/html");
+let newContent=doc.querySelector("#app-content");
 
 if(newContent){
-container.innerHTML = newContent.innerHTML;
+container.innerHTML=newContent.innerHTML;
 }
 
 if(push){
 history.pushState(null,null,url);
 }
 
-loader.classList.remove("active");
-
 });
 
 }
 
-document.querySelectorAll(".sidebar a").forEach(link => {
+document.querySelectorAll(".sidebar a").forEach(link=>{
 
-link.addEventListener("click", function(e){
+link.addEventListener("click",function(e){
 
-let url = this.getAttribute("href");
+let url=this.getAttribute("href");
 
 if(url.startsWith("/")){
 
@@ -249,7 +294,7 @@ loadPage(url);
 
 });
 
-window.addEventListener("popstate", function(){
+window.addEventListener("popstate",function(){
 loadPage(location.pathname,false);
 });
 

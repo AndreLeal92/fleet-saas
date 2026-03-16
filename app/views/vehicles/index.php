@@ -1,7 +1,8 @@
 <h1>Veículos</h1>
 
-<a href="/vehicles/create" class="btn">Novo Veículo</a>
-
+<a href="/vehicles/create" style="display:inline-block;margin-bottom:15px;padding:8px 12px;background:#2563eb;color:white;text-decoration:none;border-radius:4px;">
+Novo Veículo
+</a>
 <br><br>
 
 <table border="1" cellpadding="8">

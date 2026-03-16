@@ -1,7 +1,8 @@
 <h1>Usuários</h1>
 
-<a href="/users/create" class="btn">Novo Usuário</a>
-
+<a href="/users/create" style="display:inline-block;margin-bottom:15px;padding:8px 12px;background:#2563eb;color:white;text-decoration:none;border-radius:4px;">
+Novo Usuário
+</a>
 <table border="1">
 
 <tr>

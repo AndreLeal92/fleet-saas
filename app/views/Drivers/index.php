@@ -8,8 +8,9 @@ Este motorista não pode ser excluído porque possui abastecimentos vinculados.
 
 <h1>Motoristas</h1>
 
-<a href="/drivers/create" class="btn">Novo Motorista</a>
-
+<a href="/drivers/create" style="display:inline-block;margin-bottom:15px;padding:8px 12px;background:#2563eb;color:white;text-decoration:none;border-radius:4px;">
+Novo Motorista
+</a>
 <table border="1">
 
 <tr>

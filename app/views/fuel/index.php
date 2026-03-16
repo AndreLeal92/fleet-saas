@@ -1,7 +1,8 @@
 <h1>Abastecimentos</h1>
 
-<a href="/fuel/create" class="btn">Novo Abastecimento</a>
-
+<a href="/fuel/create" style="display:inline-block;margin-bottom:15px;padding:8px 12px;background:#2563eb;color:white;text-decoration:none;border-radius:4px;">
+Novo Abastecimento
+</a>
 <table border="1">
 
 <tr>
