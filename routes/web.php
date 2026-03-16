@@ -84,3 +84,8 @@ Router::post('/trips/store', 'TripController@store');
 Router::get('/trips/edit', 'TripController@edit');
 Router::post('/trips/update', 'TripController@update');
 Router::get('/trips/delete', 'TripController@delete');
+
+// =========================
+// TRIP REPORT
+// =========================
+Router::get('/trip-report', 'TripController@report');

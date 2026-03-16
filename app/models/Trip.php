@@ -114,4 +114,49 @@ class Trip {
         ]);
     }
 
+
+  // =========================
+// RELATÓRIO DE VIAGEM
+// =========================
+public function report(){
+
+    $sql = "
+        SELECT
+            t.id,
+            d.name AS driver,
+            v.plate AS vehicle,
+            t.origin,
+            t.destination,
+            t.trip_date,
+
+            (t.km_end - t.km_start) AS km,
+
+            COALESCE(SUM(fr.liters),0) AS liters,
+            COALESCE(SUM(fr.total),0) AS fuel_cost,
+
+            COALESCE(SUM(te.amount),0) AS expenses
+
+        FROM trips t
+
+        LEFT JOIN drivers d 
+        ON d.id = t.driver_id
+
+        LEFT JOIN vehicles v 
+        ON v.id = t.vehicle_id
+
+        LEFT JOIN fuel_records fr
+        ON fr.trip_id = t.id
+
+        LEFT JOIN trip_expenses te
+        ON te.trip_id = t.id
+
+        GROUP BY t.id
+
+        ORDER BY t.trip_date DESC
+    ";
+
+    return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
 }

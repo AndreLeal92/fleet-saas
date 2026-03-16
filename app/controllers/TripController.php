@@ -28,6 +28,7 @@ class TripController {
         $this->vehicleModel = new VehicleModel($company_id);
     }
 
+
     // ======================
     // LISTAR VIAGENS
     // ======================
@@ -168,6 +169,21 @@ class TripController {
 
         header("Location: /trips");
         exit;
+    }
+
+
+    // ======================
+    // RELATÓRIO DE VIAGENS
+    // ======================
+
+    public function report(){
+
+        $trips = $this->tripModel->report();
+
+        $view = 'Trips/report';
+
+        require __DIR__ . '/../views/layout.php';
+
     }
 
 }

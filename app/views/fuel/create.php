@@ -2,6 +2,25 @@
 
 <form method="POST" action="/fuel/store">
 
+
+<label>Viagem</label>
+
+<select name="trip_id">
+
+<option value="">Selecione</option>
+
+<?php foreach($trips as $t): ?>
+
+<option value="<?= $t['id'] ?>">
+<?= str_pad($t['id'],8,'0',STR_PAD_LEFT) ?> 
+- <?= $t['origin'] ?> → <?= $t['destination'] ?>
+</option>
+
+<?php endforeach; ?>
+
+</select>
+
+
 <label>Veículo</label>
 
 <select name="vehicle_id">
@@ -33,6 +52,7 @@
 
 
 <label>Litros</label>
+
 <input 
 type="number" 
 step="0.01" 
@@ -43,6 +63,7 @@ oninput="calcularTotal()"
 
 
 <label>Preço por litro</label>
+
 <input 
 type="number" 
 step="0.01" 
@@ -53,6 +74,7 @@ oninput="calcularTotal()"
 
 
 <label>Total</label>
+
 <input 
 type="number" 
 step="0.01" 
@@ -63,10 +85,12 @@ readonly
 
 
 <label>KM</label>
+
 <input type="number" name="odometer">
 
 
 <label>Data</label>
+
 <input type="date" name="fuel_date">
 
 
