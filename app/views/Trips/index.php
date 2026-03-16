@@ -8,6 +8,7 @@ Nova Viagem
 
 <tr style="background:#f3f4f6;">
 
+<th>Nº</th>
 <th>Motorista</th>
 <th>Veículo</th>
 <th>Origem</th>
@@ -22,16 +23,20 @@ Nova Viagem
 
 <tr>
 
+<td><strong><?= str_pad($trip['id'], 8, '0', STR_PAD_LEFT) ?></strong></td>
+
 <td><?= $trip['driver_name'] ?? '-' ?></td>
 <td><?= $trip['vehicle_plate'] ?? '-' ?></td>
+
 <td><?= $trip['origin'] ?></td>
 <td><?= $trip['destination'] ?></td>
+
 <td>
-<?= !empty($trip['date']) ? date('d/m/Y', strtotime($trip['date'])) : '-' ?>
+<?= !empty($trip['trip_date']) ? date('d/m/Y', strtotime($trip['trip_date'])) : '-' ?>
 </td>
 
 <td>
-<?= $trip['km'] ?? '-' ?>
+<?= isset($trip['km_start'],$trip['km_end']) ? ($trip['km_end'] - $trip['km_start']).' km' : '-' ?>
 </td>
 
 <td>

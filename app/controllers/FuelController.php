@@ -50,12 +50,41 @@ class FuelController {
 
     }
 
+    public function store(){
+
+        $vehicle_id = $_POST['vehicle_id'] ?? null;
+        $driver_id  = $_POST['driver_id'] ?? null;
+        $liters     = $_POST['liters'] ?? 0;
+        $price      = $_POST['price'] ?? 0;
+        $total      = $_POST['total'] ?? 0;
+        $odometer   = $_POST['odometer'] ?? 0;
+        $fuel_date  = $_POST['fuel_date'] ?? date('Y-m-d');
+
+        if(!$vehicle_id || !$driver_id){
+            die("Veículo e motorista são obrigatórios");
+        }
+
+        $this->fuelRecord->create(
+            $vehicle_id,
+            $driver_id,
+            $liters,
+            $price,
+            $total,
+            $odometer,
+            $fuel_date
+        );
+
+        header("Location: /fuel");
+        exit;
+
+    }
+
     public function delete(){
 
         $id = $_GET['id'] ?? null;
 
         if($id){
-            $this->fuelRecord->delete($id);
+            $this->fuelRecord->delete((int)$id);
         }
 
         header("Location: /fuel");

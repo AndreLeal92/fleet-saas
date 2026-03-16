@@ -75,11 +75,12 @@ Router::get('/trip-expenses/create', 'TripExpenseController@create');
 Router::post('/trip-expenses/store', 'TripExpenseController@store');
 Router::get('/trip-expenses/delete', 'TripExpenseController@delete');
 
-
 // =========================
 // TRIPS
 // =========================
 Router::get('/trips', 'TripController@index');
 Router::get('/trips/create', 'TripController@create');
 Router::post('/trips/store', 'TripController@store');
+Router::get('/trips/edit', 'TripController@edit');
+Router::post('/trips/update', 'TripController@update');
 Router::get('/trips/delete', 'TripController@delete');
