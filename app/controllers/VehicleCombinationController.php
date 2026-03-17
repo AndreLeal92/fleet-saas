@@ -24,64 +24,67 @@ class VehicleCombinationController {
 
         $this->model = new VehicleCombinationModel($this->company_id);
         $this->vehicleModel = new VehicleModel($this->company_id);
-
     }
-
-
-    /* ========================================
-       LISTAR COMBINAÇÕES
-    ======================================== */
 
     public function index(){
 
         $combinations = $this->model->all();
 
         $view = 'vehicle-combinations/index';
-
         require __DIR__ . '/../views/layout.php';
-
     }
-
-
-    /* ========================================
-       FORM ATRELAR CAVALO + CARRETA
-    ======================================== */
 
     public function create(){
 
         $vehicles = $this->vehicleModel->all();
 
         $view = 'vehicle-combinations/create';
-
         require __DIR__ . '/../views/layout.php';
-
     }
-
-
-    /* ========================================
-       SALVAR COMBINAÇÃO
-    ======================================== */
 
     public function store(){
 
         $tractor = $_POST['tractor_id'] ?? null;
-        $trailer = $_POST['trailer_id'] ?? null;
+        $trailers = $_POST['trailers'] ?? [];
 
-        if(!$tractor || !$trailer){
-            die("Selecione cavalo e carreta");
+        $trailers = array_filter($trailers);
+
+        if(!$tractor){
+            $_SESSION['error'] = "Selecione o cavalo";
+            header("Location: /vehicle-combinations/create");
+            exit;
         }
 
-        $this->model->create($tractor,$trailer);
+        if(empty($trailers)){
+            $_SESSION['error'] = "Selecione ao menos um implemento";
+            header("Location: /vehicle-combinations/create");
+            exit;
+        }
 
+        if(count($trailers) !== count(array_unique($trailers))){
+            $_SESSION['error'] = "Implementos duplicados não são permitidos";
+            header("Location: /vehicle-combinations/create");
+            exit;
+        }
+
+        if(in_array($tractor, $trailers)){
+            $_SESSION['error'] = "O cavalo não pode ser um implemento";
+            header("Location: /vehicle-combinations/create");
+            exit;
+        }
+
+        $result = $this->model->create($tractor, $trailers);
+
+        if(!$result['success']){
+            $_SESSION['error'] = $result['message'];
+            header("Location: /vehicle-combinations/create");
+            exit;
+        }
+
+        $_SESSION['success'] = "Veículos atrelados com sucesso!";
         header("Location: /vehicle-combinations");
         exit;
-
     }
-
-
-    /* ========================================
-       DESATRELAR
-    ======================================== */
 
     public function detach(){
 
@@ -89,11 +92,10 @@ class VehicleCombinationController {
 
         if($id){
             $this->model->delete($id);
+            $_SESSION['success'] = "Desatrelado com sucesso!";
         }
 
         header("Location: /vehicle-combinations");
         exit;
-
     }
-
 }

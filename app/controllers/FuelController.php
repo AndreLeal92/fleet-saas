@@ -3,12 +3,15 @@
 require_once __DIR__ . '/../models/FuelRecord.php';
 require_once __DIR__ . '/../models/VehicleModel.php';
 require_once __DIR__ . '/../models/DriverModel.php';
+require_once __DIR__ . '/../models/Trip.php'; // 🔥 NOVO
 
 class FuelController {
 
     private $fuelRecord;
     private $vehicleModel;
     private $driverModel;
+    private $trip;
+    private $company_id;
 
     public function __construct(){
 
@@ -21,12 +24,12 @@ class FuelController {
             exit;
         }
 
-        $company_id = (int) $_SESSION['company_id'];
+        $this->company_id = (int) $_SESSION['company_id'];
 
-        $this->fuelRecord   = new FuelRecord($company_id);
-        $this->vehicleModel = new VehicleModel($company_id);
-        $this->driverModel  = new DriverModel($company_id);
-
+        $this->fuelRecord   = new FuelRecord($this->company_id);
+        $this->vehicleModel = new VehicleModel($this->company_id);
+        $this->driverModel  = new DriverModel($this->company_id);
+        $this->trip    = new Trip($this->company_id); // 🔥 NOVO
     }
 
     public function index(){
@@ -34,24 +37,22 @@ class FuelController {
         $records = $this->fuelRecord->all();
 
         $view = 'fuel/index';
-
         require __DIR__ . '/../views/layout.php';
-
     }
 
     public function create(){
 
         $vehicles = $this->vehicleModel->all();
         $drivers  = $this->driverModel->all();
+        $trips    = $this->trip->all(); // 🔥 ESSENCIAL
 
         $view = 'fuel/create';
-
         require __DIR__ . '/../views/layout.php';
-
     }
 
     public function store(){
 
+        $trip_id    = $_POST['trip_id'] ?? null; // 🔥 NOVO
         $vehicle_id = $_POST['vehicle_id'] ?? null;
         $driver_id  = $_POST['driver_id'] ?? null;
         $liters     = $_POST['liters'] ?? 0;
@@ -65,6 +66,7 @@ class FuelController {
         }
 
         $this->fuelRecord->create(
+            $trip_id, // 🔥 ORDEM CORRETA
             $vehicle_id,
             $driver_id,
             $liters,
@@ -76,7 +78,6 @@ class FuelController {
 
         header("Location: /fuel");
         exit;
-
     }
 
     public function delete(){
@@ -89,7 +90,5 @@ class FuelController {
 
         header("Location: /fuel");
         exit;
-
     }
-
 }

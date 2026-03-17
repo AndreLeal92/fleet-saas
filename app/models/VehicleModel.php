@@ -8,10 +8,30 @@ class VehicleModel {
     private int $company_id;
 
     public function __construct(int $company_id){
-
         $this->db = Database::getConnection();
         $this->company_id = $company_id;
 
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+
+    /* =========================================
+       HELPERS
+    ========================================= */
+
+    private function toDecimal($value){
+        return ($value === '' || $value === null) ? null : (float)$value;
+    }
+
+    private function toInt($value){
+        return ($value === '' || $value === null) ? null : (int)$value;
+    }
+
+    private function toBool($value){
+        return $value ? 1 : 0;
+    }
+
+    private function toNull($value){
+        return ($value === '' || $value === null) ? null : $value;
     }
 
     /* =========================================
@@ -53,9 +73,7 @@ class VehicleModel {
             'company_id' => $this->company_id
         ]);
 
-        $vehicle = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $vehicle ?: null;
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     /* =========================================
@@ -63,7 +81,6 @@ class VehicleModel {
     ========================================= */
 
     public function create(
-
         $plate,
         $year_fab,
         $brand,
@@ -99,10 +116,23 @@ class VehicleModel {
 
         $status,
         $crlv_file
-
     ): bool {
 
-        $year_fab = (int)$year_fab;
+        // 🔥 NORMALIZAÇÃO
+        $year_fab = $this->toInt($year_fab);
+
+        $fuel_tank_capacity = $this->toDecimal($fuel_tank_capacity);
+        $arla_tank_capacity = $this->toDecimal($arla_tank_capacity);
+
+        $cargo_capacity = $this->toInt($cargo_capacity);
+        $pbt = $this->toInt($pbt);
+
+        $uses_arla32 = $this->toBool($uses_arla32);
+
+        // strings opcionais
+        $renavam = $this->toNull($renavam);
+        $chassis = $this->toNull($chassis);
+        $owner_email = $this->toNull($owner_email);
 
         $sql = "INSERT INTO vehicles (
 
@@ -144,9 +174,7 @@ class VehicleModel {
             status,
             crlv_file
 
-        )
-
-        VALUES (
+        ) VALUES (
 
             :company_id,
 
@@ -190,7 +218,6 @@ class VehicleModel {
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
-
             'company_id' => $this->company_id,
 
             'plate' => $plate,
@@ -244,17 +271,15 @@ class VehicleModel {
         ?string $crlv_file
     ): bool{
 
-        $year_fab = (int)$year_fab;
+        $year_fab = $this->toInt($year_fab);
 
         $sql = "UPDATE vehicles
                 SET
-
                 plate = :plate,
                 brand = :brand,
                 model = :model,
                 year_fab = :year_fab,
                 crlv_file = :crlv_file
-
                 WHERE id = :id
                 AND company_id = :company_id
                 LIMIT 1";
@@ -278,12 +303,12 @@ class VehicleModel {
 
     public function delete(int $id): bool {
 
-        $sql = "DELETE FROM vehicles
-                WHERE id = :id
-                AND company_id = :company_id
-                LIMIT 1";
-
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare("
+            DELETE FROM vehicles
+            WHERE id = :id
+            AND company_id = :company_id
+            LIMIT 1
+        ");
 
         return $stmt->execute([
             'id' => $id,
@@ -297,14 +322,14 @@ class VehicleModel {
 
     public function getFuelTypes(): array{
 
-        $sql = "SELECT DISTINCT fuel_type
-                FROM vehicles
-                WHERE fuel_type IS NOT NULL
-                AND fuel_type != ''
-                AND company_id = :company_id
-                ORDER BY fuel_type";
-
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare("
+            SELECT DISTINCT fuel_type
+            FROM vehicles
+            WHERE fuel_type IS NOT NULL
+            AND fuel_type != ''
+            AND company_id = :company_id
+            ORDER BY fuel_type
+        ");
 
         $stmt->execute([
             'company_id'=>$this->company_id
@@ -319,14 +344,14 @@ class VehicleModel {
 
     public function getVehicleTypes(): array{
 
-        $sql = "SELECT DISTINCT vehicle_type
-                FROM vehicles
-                WHERE vehicle_type IS NOT NULL
-                AND vehicle_type != ''
-                AND company_id = :company_id
-                ORDER BY vehicle_type";
-
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare("
+            SELECT DISTINCT vehicle_type
+            FROM vehicles
+            WHERE vehicle_type IS NOT NULL
+            AND vehicle_type != ''
+            AND company_id = :company_id
+            ORDER BY vehicle_type
+        ");
 
         $stmt->execute([
             'company_id'=>$this->company_id

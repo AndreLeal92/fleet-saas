@@ -11,7 +11,7 @@
 <thead>
 <tr>
 <th>Cavalo</th>
-<th>Carreta</th>
+<th>Implementos</th>
 <th>Ações</th>
 </tr>
 </thead>
@@ -24,21 +24,23 @@
 
 <tr>
 
-<td><?= htmlspecialchars($c['cavalo']) ?></td>
-<td><?= htmlspecialchars($c['carreta']) ?></td>
+<td>
+    🚛 <?= htmlspecialchars($c['cavalo_modelo']) ?><br>
+    <small><?= htmlspecialchars($c['cavalo_placa']) ?></small>
+</td>
 
 <td>
+    🚚 <?= $c['implementos'] ?: 'Sem implementos' ?>
+</td>
 
+<td>
 <a 
 href="/vehicle-combinations/detach?id=<?= $c['id'] ?>"
 class="btn btn-danger"
 onclick="return confirm('Desatrelar conjunto?')"
 >
-
 Desatrelar
-
 </a>
-
 </td>
 
 </tr>

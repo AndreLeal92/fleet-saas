@@ -8,88 +8,124 @@ class VehicleCombinationModel{
     private $company_id;
 
     public function __construct($company_id){
-
         $this->db = Database::getConnection();
         $this->company_id = $company_id;
-
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
+    public function create($tractor, $trailers){
 
-    /* ========================================
-       CRIAR CONJUNTO CAVALO + CARRETA
-    ======================================== */
+        try {
 
-    public function create($tractor,$trailer){
+            if(!$tractor){
+                return ['success'=>false,'message'=>'Selecione o cavalo'];
+            }
 
-        /* verifica se cavalo já está atrelado */
+            if(empty($trailers)){
+                return ['success'=>false,'message'=>'Selecione ao menos um implemento'];
+            }
 
-        $check = $this->db->prepare("
-            SELECT id
-            FROM vehicle_combinations
-            WHERE tractor_vehicle_id = :tractor
-            AND company_id = :company_id
-        ");
+            // 🔒 valida cavalo já em uso
+            $stmt = $this->db->prepare("
+                SELECT id FROM vehicle_combinations
+                WHERE tractor_vehicle_id = :tractor AND company_id = :company_id
+            ");
+            $stmt->execute([
+                'tractor'=>$tractor,
+                'company_id'=>$this->company_id
+            ]);
 
-        $check->execute([
-            'tractor'=>$tractor,
-            'company_id'=>$this->company_id
-        ]);
+            if($stmt->rowCount() > 0){
+                return ['success'=>false,'message'=>'Este cavalo já está em uso'];
+            }
 
-        if($check->fetch()){
-            return false;
+            // 🔒 valida implementos já em uso
+            $placeholders = implode(',', array_fill(0, count($trailers), '?'));
+
+            $stmt = $this->db->prepare("
+                SELECT vehicle_id FROM vehicle_combination_items
+                WHERE vehicle_id IN ($placeholders)
+            ");
+
+            $stmt->execute($trailers);
+
+            if($stmt->rowCount() > 0){
+                return ['success'=>false,'message'=>'Um ou mais implementos já estão em uso'];
+            }
+
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare("
+                INSERT INTO vehicle_combinations (company_id, tractor_vehicle_id)
+                VALUES (:company_id, :tractor)
+            ");
+
+            $stmt->execute([
+                'company_id'=>$this->company_id,
+                'tractor'=>$tractor
+            ]);
+
+            $combination_id = $this->db->lastInsertId();
+
+            $position = 1;
+
+            foreach($trailers as $t){
+
+                $stmt = $this->db->prepare("
+                    INSERT INTO vehicle_combination_items
+                    (combination_id, vehicle_id, position)
+                    VALUES (:combination_id, :vehicle_id, :position)
+                ");
+
+                $stmt->execute([
+                    'combination_id'=>$combination_id,
+                    'vehicle_id'=>$t,
+                    'position'=>$position++
+                ]);
+            }
+
+            $this->db->commit();
+
+            return ['success'=>true];
+
+        } catch(Exception $e){
+
+            $this->db->rollBack();
+
+            return ['success'=>false,'message'=>$e->getMessage()];
         }
-
-
-        /* verifica se carreta já está atrelada */
-
-        $check = $this->db->prepare("
-            SELECT id
-            FROM vehicle_combinations
-            WHERE trailer_vehicle_id = :trailer
-            AND company_id = :company_id
-        ");
-
-        $check->execute([
-            'trailer'=>$trailer,
-            'company_id'=>$this->company_id
-        ]);
-
-        if($check->fetch()){
-            return false;
-        }
-
-
-        $sql = "INSERT INTO vehicle_combinations
-                (company_id, tractor_vehicle_id, trailer_vehicle_id)
-                VALUES
-                (:company_id, :tractor, :trailer)";
-
-        $stmt = $this->db->prepare($sql);
-
-        return $stmt->execute([
-            'company_id'=>$this->company_id,
-            'tractor'=>$tractor,
-            'trailer'=>$trailer
-        ]);
-
     }
-
-
-    /* ========================================
-       LISTAR COMBINAÇÕES
-    ======================================== */
 
     public function all(){
 
         $sql = "SELECT
                 vc.id,
-                v1.plate AS cavalo,
-                v2.plate AS carreta
-                FROM vehicle_combinations vc
-                JOIN vehicles v1 ON v1.id = vc.tractor_vehicle_id
-                JOIN vehicles v2 ON v2.id = vc.trailer_vehicle_id
-                WHERE vc.company_id = :company_id
-                ORDER BY vc.id DESC";
+
+                v1.model AS cavalo_modelo,
+                v1.plate AS cavalo_placa,
+
+                GROUP_CONCAT(
+                    CONCAT(v2.model, ' (', v2.plate, ')')
+                    ORDER BY vci.position
+                    SEPARATOR ' + '
+                ) AS implementos
+
+            FROM vehicle_combinations vc
+
+            INNER JOIN vehicles v1 
+                ON v1.id = vc.tractor_vehicle_id
+
+            LEFT JOIN vehicle_combination_items vci 
+                ON vci.combination_id = vc.id
+
+            LEFT JOIN vehicles v2 
+                ON v2.id = vci.vehicle_id
+
+            WHERE vc.company_id = :company_id
+
+            GROUP BY vc.id
+
+            ORDER BY vc.id DESC";
 
         $stmt = $this->db->prepare($sql);
 
@@ -98,49 +134,51 @@ class VehicleCombinationModel{
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
-
-
-    /* ========================================
-       LISTAR VEÍCULOS DISPONÍVEIS
-    ======================================== */
 
     public function getAvailableVehicles(){
 
-        $sql = "SELECT id, plate, model
-                FROM vehicles
-                WHERE company_id = :company_id
-                ORDER BY plate";
-
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare("
+            SELECT id, plate, model
+            FROM vehicles
+            WHERE company_id = :company_id
+            ORDER BY plate
+        ");
 
         $stmt->execute([
             'company_id'=>$this->company_id
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
-
-
-    /* ========================================
-       DESATRELAR CONJUNTO
-    ======================================== */
 
     public function delete($id){
 
-        $sql = "DELETE FROM vehicle_combinations
-                WHERE id = :id
-                AND company_id = :company_id";
+        try {
 
-        $stmt = $this->db->prepare($sql);
+            $this->db->beginTransaction();
 
-        return $stmt->execute([
-            'id'=>$id,
-            'company_id'=>$this->company_id
-        ]);
+            $this->db->prepare("
+                DELETE FROM vehicle_combination_items
+                WHERE combination_id = :id
+            ")->execute(['id'=>$id]);
 
+            $this->db->prepare("
+                DELETE FROM vehicle_combinations
+                WHERE id = :id AND company_id = :company_id
+            ")->execute([
+                'id'=>$id,
+                'company_id'=>$this->company_id
+            ]);
+
+            $this->db->commit();
+
+            return true;
+
+        } catch(Exception $e){
+
+            $this->db->rollBack();
+            return false;
+        }
     }
-
 }

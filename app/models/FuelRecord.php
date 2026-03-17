@@ -5,13 +5,12 @@ require_once __DIR__ . '/../../config/database.php';
 class FuelRecord {
 
     private $db;
+    private $company_id;
 
-    public function __construct() {
-
+    public function __construct($company_id) {
         $this->db = Database::getConnection();
-
+        $this->company_id = $company_id;
     }
-
 
     // ======================
     // LISTAR ABASTECIMENTOS
@@ -27,22 +26,26 @@ class FuelRecord {
                 FROM fuel_records f
 
                 LEFT JOIN vehicles v 
-                ON v.id = f.vehicle_id
+                    ON v.id = f.vehicle_id
 
                 LEFT JOIN drivers d 
-                ON d.id = f.driver_id
+                    ON d.id = f.driver_id
 
                 LEFT JOIN trips t
-                ON t.id = f.trip_id
+                    ON t.id = f.trip_id
+
+                WHERE f.company_id = :company_id
 
                 ORDER BY f.fuel_date DESC";
 
-        $stmt = $this->db->query($sql);
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'company_id'=>$this->company_id
+        ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
-
 
     // ======================
     // CRIAR ABASTECIMENTO
@@ -51,15 +54,16 @@ class FuelRecord {
     public function create($trip_id,$vehicle_id,$driver_id,$liters,$price,$total,$odometer,$fuel_date){
 
         $sql = "INSERT INTO fuel_records
-                (trip_id,vehicle_id,driver_id,liters,price,total,odometer,fuel_date)
+                (company_id,trip_id,vehicle_id,driver_id,liters,price,total,odometer,fuel_date)
                 VALUES
-                (:trip_id,:vehicle_id,:driver_id,:liters,:price,:total,:odometer,:fuel_date)";
+                (:company_id,:trip_id,:vehicle_id,:driver_id,:liters,:price,:total,:odometer,:fuel_date)";
 
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
 
-            'trip_id'    => $trip_id,
+            'company_id' => $this->company_id,
+            'trip_id'    => $trip_id ?: null, // 🔥 evita erro
             'vehicle_id' => $vehicle_id,
             'driver_id'  => $driver_id,
             'liters'     => $liters,
@@ -69,9 +73,7 @@ class FuelRecord {
             'fuel_date'  => $fuel_date
 
         ]);
-
     }
-
 
     // ======================
     // EXCLUIR ABASTECIMENTO
@@ -79,14 +81,14 @@ class FuelRecord {
 
     public function delete($id){
 
-        $sql = "DELETE FROM fuel_records WHERE id=:id";
+        $sql = "DELETE FROM fuel_records 
+                WHERE id = :id AND company_id = :company_id";
 
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
-            'id'=>$id
+            'id'=>$id,
+            'company_id'=>$this->company_id
         ]);
-
     }
-
 }

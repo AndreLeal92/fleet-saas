@@ -10,7 +10,6 @@
 <input name="plate" required>
 
 <label>Tipo do Veículo</label>
-
 <input 
 name="vehicle_type"
 list="vehicle_types"
@@ -18,19 +17,15 @@ placeholder="Digite ou selecione"
 >
 
 <datalist id="vehicle_types">
-
 <?php if(!empty($vehicleTypes)): ?>
 <?php foreach($vehicleTypes as $t): ?>
-
 <option value="<?= htmlspecialchars($t['vehicle_type']) ?>">
-
 <?php endforeach; ?>
 <?php endif; ?>
-
 </datalist>
 
 <label>Ano Fabricação</label>
-<input name="year_fab" type="number">
+<input name="year_fab" type="number" min="1900">
 
 <label>Marca</label>
 <input name="brand">
@@ -45,7 +40,6 @@ placeholder="Digite ou selecione"
 <input name="chassis">
 
 <label>Tipo Combustível</label>
-
 <input 
 name="fuel_type" 
 list="fuel_types"
@@ -53,34 +47,53 @@ placeholder="Digite ou selecione"
 >
 
 <datalist id="fuel_types">
-
 <?php if(!empty($fuelTypes)): ?>
 <?php foreach($fuelTypes as $f): ?>
-
 <option value="<?= htmlspecialchars($f['fuel_type']) ?>">
-
 <?php endforeach; ?>
 <?php endif; ?>
-
 </datalist>
 
 <label>Usa Arla32</label>
+<input type="hidden" name="uses_arla32" value="0">
 <input type="checkbox" name="uses_arla32" value="1">
 
 <label>Medida do Pneu</label>
 <input name="tire_size">
 
 <label>Capacidade Tanque Combustível (L)</label>
-<input name="fuel_tank_capacity" type="number" step="0.01">
+<input 
+name="fuel_tank_capacity" 
+type="number" 
+step="0.01" 
+min="0"
+value=""
+>
 
 <label>Capacidade Tanque Arla32 (L)</label>
-<input name="arla_tank_capacity" type="number" step="0.01">
+<input 
+name="arla_tank_capacity" 
+type="number" 
+step="0.01" 
+min="0"
+value=""
+>
 
 <label>Capacidade de Carga (Kg)</label>
-<input name="cargo_capacity" type="number">
+<input 
+name="cargo_capacity" 
+type="number" 
+min="0"
+value=""
+>
 
 <label>PBT (Kg)</label>
-<input name="pbt" type="number">
+<input 
+name="pbt" 
+type="number" 
+min="0"
+value=""
+>
 
 </div>
 

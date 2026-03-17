@@ -1,4 +1,8 @@
+<?php $trips = $trips ?? []; ?>
+
 <h1>Novo Abastecimento</h1>
+
+
 
 <form method="POST" action="/fuel/store">
 
