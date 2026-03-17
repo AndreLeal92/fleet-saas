@@ -212,11 +212,19 @@ style="<?= strpos($current,'/trip-report')!==false?'display:block':'' ?>">
 <button class="dropdown-btn">📁 Cadastros</button>
 
 <div class="dropdown-container"
-style="<?= (strpos($current,'/vehicles')!==false || strpos($current,'/drivers')!==false || strpos($current,'/users')!==false)?'display:block':'' ?>">
+style="<?= (strpos($current,'/vehicles')!==false 
+|| strpos($current,'/drivers')!==false 
+|| strpos($current,'/users')!==false
+|| strpos($current,'/vehicle-combinations')!==false
+)?'display:block':'' ?>">
 
-<a href="/vehicles">Veículos</a>
-<a href="/drivers">Motoristas</a>
-<a href="/users">Usuários</a>
+<a href="/vehicles">🚛 Veículos</a>
+
+<a href="/drivers">👤 Motoristas</a>
+
+<a href="/vehicle-combinations">🔗 Combinação de Veículos</a>
+
+<a href="/users">👥 Usuários</a>
 
 </div>
 
@@ -319,8 +327,6 @@ if(newContent){
 
 container.innerHTML=newContent.innerHTML;
 
-/* reinicializa scripts */
-
 initCep();
 initDropdown();
 
@@ -340,6 +346,12 @@ link.addEventListener("click",function(e){
 
 let url=this.getAttribute("href");
 
+/* NÃO intercepta logout */
+
+if(url === "/logout"){
+return;
+}
+
 if(url.startsWith("/")){
 
 e.preventDefault();
@@ -354,8 +366,6 @@ loadPage(url);
 window.addEventListener("popstate",function(){
 loadPage(location.pathname,false);
 });
-
-/* inicialização inicial */
 
 document.addEventListener("DOMContentLoaded",function(){
 

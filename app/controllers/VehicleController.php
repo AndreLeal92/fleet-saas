@@ -253,4 +253,113 @@ class VehicleController {
         exit;
     }
 
+    /* ================================
+       EXPORTAR CSV / PDF
+    ================================= */
+
+    public function export(){
+
+        $type = $_GET['type'] ?? 'csv';
+        $status = $_GET['status'] ?? 'all';
+
+        $vehicles = $this->vehicleModel->all();
+
+        if($status !== 'all'){
+            $vehicles = array_filter($vehicles,function($v) use ($status){
+                return $v['status'] == $status;
+            });
+        }
+
+        if($type === 'csv'){
+
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=frota.csv');
+
+            $output = fopen('php://output','w');
+
+            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($output,[
+                'ID','Placa','Marca','Modelo','Ano',
+                'Renavam','Chassis','Combustível',
+                'Usa Arla32','Pneu',
+                'Capacidade Combustível','Capacidade Arla32',
+                'Capacidade Carga','PBT',
+                'Proprietário','Documento','Telefone',
+                'Responsável','Email',
+                'CEP','Logradouro','Número','Bairro',
+                'Cidade','Estado','Status'
+            ],';');
+
+            foreach($vehicles as $v){
+
+                fputcsv($output,[
+                    $v['id'] ?? '',
+                    $v['plate'] ?? '',
+                    $v['brand'] ?? '',
+                    $v['model'] ?? '',
+                    $v['year_fab'] ?? '',
+                    $v['renavam'] ?? '',
+                    $v['chassis'] ?? '',
+                    $v['fuel_type'] ?? '',
+                    !empty($v['uses_arla32']) ? 'Sim':'Não',
+                    $v['tire_size'] ?? '',
+                    $v['fuel_tank_capacity'] ?? '',
+                    $v['arla_tank_capacity'] ?? '',
+                    $v['cargo_capacity'] ?? '',
+                    $v['pbt'] ?? '',
+                    $v['owner_name'] ?? '',
+                    $v['owner_document'] ?? '',
+                    $v['owner_phone'] ?? '',
+                    $v['responsible_name'] ?? '',
+                    $v['owner_email'] ?? '',
+                    $v['cep'] ?? '',
+                    $v['logradouro'] ?? '',
+                    $v['numero'] ?? '',
+                    $v['bairro'] ?? '',
+                    $v['cidade'] ?? '',
+                    $v['estado'] ?? '',
+                    $v['status'] ? 'Ativo':'Inativo'
+                ],';');
+
+            }
+
+            fclose($output);
+            exit;
+        }
+
+        if($type === 'pdf'){
+
+            echo "<h1>Relatório de Veículos</h1>";
+
+            echo "<table border='1' cellpadding='5'>";
+
+            echo "<tr>
+            <th>ID</th>
+            <th>Placa</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Ano</th>
+            <th>Status</th>
+            </tr>";
+
+            foreach($vehicles as $v){
+
+                echo "<tr>
+                <td>{$v['id']}</td>
+                <td>{$v['plate']}</td>
+                <td>{$v['brand']}</td>
+                <td>{$v['model']}</td>
+                <td>{$v['year_fab']}</td>
+                <td>".($v['status']?'Ativo':'Inativo')."</td>
+                </tr>";
+
+            }
+
+            echo "</table>";
+            exit;
+        }
+
+    }
+
 }

@@ -18,6 +18,11 @@ class AuthController {
         $this->userModel = new UserModel();
     }
 
+
+    /* ===============================
+       TELA LOGIN
+    =============================== */
+
     public function showLogin(){
 
         if(isset($_SESSION['user_id']) && isset($_SESSION['company_id'])){
@@ -27,6 +32,11 @@ class AuthController {
 
         require __DIR__ . '/../views/login.php';
     }
+
+
+    /* ===============================
+       AUTENTICAR USUÁRIO
+    =============================== */
 
     public function authenticate(){
 
@@ -65,10 +75,21 @@ class AuthController {
 
     }
 
+
+    /* ===============================
+       LOGOUT
+    =============================== */
+
     public function logout(){
 
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // limpa variáveis de sessão
         $_SESSION = [];
 
+        // remove cookie de sessão
         if (ini_get("session.use_cookies")) {
 
             $params = session_get_cookie_params();
@@ -82,9 +103,9 @@ class AuthController {
                 $params["secure"],
                 $params["httponly"]
             );
-
         }
 
+        // destrói sessão
         session_destroy();
 
         header("Location: /login");
