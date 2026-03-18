@@ -1,45 +1,34 @@
 <h1>Nova Manutenção</h1>
 
-<form method="POST" action="/maintenance/store">
+<form method="POST" action="/maintenance/store" class="form-grid">
 
 <label>Veículo</label>
-
 <select name="vehicle_id">
-
 <?php foreach($vehicles as $v): ?>
-
 <option value="<?= $v['id'] ?>">
 <?= $v['plate'] ?>
 </option>
-
 <?php endforeach; ?>
-
 </select>
 
-<br><br>
+<label>Tipo</label>
+<input name="type" placeholder="Ex: Troca de óleo">
 
 <label>Descrição</label>
-<input type="text" name="description">
-
-<br><br>
+<input name="description">
 
 <label>Custo</label>
 <input type="number" step="0.01" name="cost">
 
-<br><br>
+<label>KM atual</label>
+<input type="number" name="km">
 
-<label>KM</label>
-<input type="number" name="odometer">
-
-<br><br>
+<label>Próxima manutenção (KM)</label>
+<input type="number" name="next_km">
 
 <label>Data</label>
 <input type="date" name="maintenance_date">
 
-<br><br>
-
-<button type="submit">
-Salvar
-</button>
+<button class="btn">Salvar</button>
 
 </form>

@@ -24,6 +24,8 @@ height:100vh;
 background:#111827;
 color:white;
 position:fixed;
+overflow-y:auto;
+transition:0.3s;
 }
 
 .sidebar-title{
@@ -37,10 +39,12 @@ display:block;
 padding:14px 20px;
 color:white;
 text-decoration:none;
+transition:0.2s;
 }
 
 .sidebar a:hover{
 background:#2563eb;
+padding-left:25px;
 }
 
 .sidebar a.active{
@@ -72,12 +76,14 @@ background:#1f2937;
 
 .dropdown-container a{
 padding-left:40px;
+font-size:14px;
 }
 
 /* MAIN */
 
 .main{
 margin-left:230px;
+transition:0.3s;
 }
 
 /* TOPBAR */
@@ -90,6 +96,9 @@ display:flex;
 align-items:center;
 justify-content:space-between;
 padding:0 20px;
+position:sticky;
+top:0;
+z-index:10;
 }
 
 /* CONTENT */
@@ -147,12 +156,12 @@ padding:20px;
 border-radius:10px;
 box-shadow:0 4px 10px rgba(0,0,0,0.05);
 margin-top:20px;
+overflow-x:auto;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:10px;
 }
 
 table th{
@@ -171,17 +180,33 @@ table tr:hover{
 background:#f9fafb;
 }
 
+/* RESPONSIVO */
+
+@media(max-width:768px){
+
+.sidebar{
+left:-230px;
+}
+
+.sidebar.active{
+left:0;
+}
+
+.main{
+margin-left:0;
+}
+
+}
+
 </style>
 
 </head>
 
 <body>
 
-<?php
-$current = $_SERVER['REQUEST_URI'];
-?>
+<?php $current = $_SERVER['REQUEST_URI']; ?>
 
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
 
 <div class="sidebar-title">
 <img src="/assets/images/Neofleet_branco.png" style="width:170px;">
@@ -192,11 +217,17 @@ $current = $_SERVER['REQUEST_URI'];
 <button class="dropdown-btn">🚚 Operação</button>
 
 <div class="dropdown-container"
-style="<?= (strpos($current,'/trips')!==false || strpos($current,'/fuel')!==false) ? 'display:block':'' ?>">
+style="<?= (
+strpos($current,'/trips')!==false || 
+strpos($current,'/fuel')!==false ||
+strpos($current,'/maintenance')!==false ||
+strpos($current,'/trip-expenses')!==false
+)?'display:block':'' ?>">
 
-<a href="/trips">Viagens</a>
-<a href="/fuel">Abastecimentos</a>
-<a href="/trip-expenses/create">Despesas</a>
+<a href="/trips">🛣️ Viagens</a>
+<a href="/fuel">⛽ Abastecimentos</a>
+<a href="/maintenance">🛠️ Manutenção</a>
+<a href="/trip-expenses/create">💰 Despesas</a>
 
 </div>
 
@@ -205,26 +236,25 @@ style="<?= (strpos($current,'/trips')!==false || strpos($current,'/fuel')!==fals
 <div class="dropdown-container"
 style="<?= strpos($current,'/trip-report')!==false?'display:block':'' ?>">
 
-<a href="/trip-report">Relatório de Viagens</a>
+<a href="/trip-report">📊 Relatório de Viagens</a>
 
 </div>
 
 <button class="dropdown-btn">📁 Cadastros</button>
 
 <div class="dropdown-container"
-style="<?= (strpos($current,'/vehicles')!==false 
-|| strpos($current,'/drivers')!==false 
-|| strpos($current,'/users')!==false
-|| strpos($current,'/vehicle-combinations')!==false
+style="<?= (
+strpos($current,'/vehicles')!==false || 
+strpos($current,'/drivers')!==false || 
+strpos($current,'/users')!==false ||
+strpos($current,'/vehicle-combinations')!==false
 )?'display:block':'' ?>">
 
 <a href="/vehicles">🚛 Veículos</a>
-
 <a href="/drivers">👤 Motoristas</a>
-
-<a href="/vehicle-combinations">🔗 Combinação de Veículos</a>
-
+<a href="/vehicle-combinations">🔗 Atrelar Cavalo+Carreta</a>
 <a href="/users">👥 Usuários</a>
+<a href="/maintenance-plans">🧠 Preventivas</a>
 
 </div>
 
@@ -236,7 +266,7 @@ style="<?= (strpos($current,'/vehicles')!==false
 
 <div class="topbar">
 
-<div style="font-size:20px;">☰</div>
+<div onclick="toggleSidebar()" style="cursor:pointer;font-size:20px;">☰</div>
 
 <div>
 <?= $_SESSION['user_name'] ?? 'Admin' ?>
@@ -245,75 +275,32 @@ style="<?= (strpos($current,'/vehicles')!==false
 </div>
 
 <div class="content" id="app-content">
-
 <?php require __DIR__ . '/' . $view . '.php'; ?>
-
 </div>
 
 </div>
-
 
 <script>
 
-/* DROPDOWN MENU */
+// SIDEBAR MOBILE
+function toggleSidebar(){
+document.getElementById("sidebar").classList.toggle("active");
+}
 
+// DROPDOWN
 function initDropdown(){
+let dropdown=document.getElementsByClassName("dropdown-btn");
 
-var dropdown=document.getElementsByClassName("dropdown-btn");
-
-for(var i=0;i<dropdown.length;i++){
-
+for(let i=0;i<dropdown.length;i++){
 dropdown[i].onclick=function(){
-
-var dropdownContent=this.nextElementSibling;
-
-dropdownContent.style.display=
-dropdownContent.style.display==="block"
-?"none"
-:"block";
-
-};
-
+let content=this.nextElementSibling;
+content.style.display = content.style.display==="block"?"none":"block";
+}
+}
 }
 
-}
-
-/* CEP AUTOMÁTICO */
-
-function initCep(){
-
-const cepInput=document.getElementById("cep");
-
-if(!cepInput) return;
-
-cepInput.addEventListener("blur",function(){
-
-let cep=this.value.replace(/\D/g,'');
-
-if(cep.length!==8) return;
-
-fetch("https://viacep.com.br/ws/"+cep+"/json/")
-.then(res=>res.json())
-.then(data=>{
-
-if(data.erro) return;
-
-document.getElementById("logradouro").value=data.logradouro || "";
-document.getElementById("bairro").value=data.bairro || "";
-document.getElementById("cidade").value=data.localidade || "";
-document.getElementById("estado").value=data.uf || "";
-
-});
-
-});
-
-}
-
-/* SPA */
-
+// SPA MELHORADO
 function loadPage(url,push=true){
-
-const container=document.getElementById("app-content");
 
 fetch(url)
 .then(res=>res.text())
@@ -324,12 +311,8 @@ let doc=parser.parseFromString(html,"text/html");
 let newContent=doc.querySelector("#app-content");
 
 if(newContent){
-
-container.innerHTML=newContent.innerHTML;
-
-initCep();
+document.getElementById("app-content").innerHTML=newContent.innerHTML;
 initDropdown();
-
 }
 
 if(push){
@@ -337,41 +320,29 @@ history.pushState(null,null,url);
 }
 
 });
-
 }
 
 document.querySelectorAll(".sidebar a").forEach(link=>{
-
 link.addEventListener("click",function(e){
 
 let url=this.getAttribute("href");
 
-/* NÃO intercepta logout */
-
-if(url === "/logout"){
-return;
-}
+if(url === "/logout") return;
 
 if(url.startsWith("/")){
-
 e.preventDefault();
 loadPage(url);
-
 }
 
 });
-
 });
 
-window.addEventListener("popstate",function(){
+window.addEventListener("popstate",()=>{
 loadPage(location.pathname,false);
 });
 
-document.addEventListener("DOMContentLoaded",function(){
-
-initCep();
+document.addEventListener("DOMContentLoaded",()=>{
 initDropdown();
-
 });
 
 </script>

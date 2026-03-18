@@ -6,11 +6,11 @@ require_once __DIR__ . '/../models/FuelRecord.php';
 require_once __DIR__ . '/../models/Trip.php';
 require_once __DIR__ . '/../models/TripExpense.php';
 require_once __DIR__ . '/../models/VehicleDocumentModel.php';
+require_once __DIR__ . '/../models/Maintenance.php'; // 🔥 NOVO
 
 class DashboardController {
 
-    public function index()
-    {
+    public function index(){
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -21,7 +21,7 @@ class DashboardController {
             exit;
         }
 
-        $company_id = $_SESSION['company_id'];
+        $company_id = (int) $_SESSION['company_id'];
 
         // Models
         $vehicleModel = new VehicleModel($company_id);
@@ -30,6 +30,7 @@ class DashboardController {
         $tripModel    = new Trip($company_id);
         $expenseModel = new TripExpense($company_id);
         $docModel     = new VehicleDocumentModel($company_id);
+        $maintenanceModel = new Maintenance($company_id); // 🔥 NOVO
 
         // Contagens
         $vehicles = count($vehicleModel->all());
@@ -38,11 +39,13 @@ class DashboardController {
         $trips    = count($tripModel->all());
         $expenses = count($expenseModel->all());
 
-        // ALERTA DE DOCUMENTOS VENCENDO
+        // ALERTAS
         $alerts = $docModel->expiringSoon();
 
-        $view = 'dashboard/index';
+        // 💰 KPI GLOBAL
+        $realCost = $maintenanceModel->realCostPerKm();
 
+        $view = 'dashboard/index';
         require __DIR__ . '/../views/layout.php';
     }
 

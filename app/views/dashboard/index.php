@@ -32,6 +32,7 @@
 .card.orange{ background:#f59e0b; }
 .card.purple{ background:#8b5cf6; }
 .card.red{ background:#ef4444; }
+.card.dark{ background:#111827; } /* 🔥 NOVO */
 
 /* TEXTO */
 .card-info h3{
@@ -118,6 +119,17 @@
 <div class="card-icon">💰</div>
 </div>
 
+<!-- 💰 NOVO KPI -->
+<div class="card dark">
+<div class="card-info">
+<h3>Custo por KM</h3>
+<p>
+R$ <?= number_format($realCost['cost_per_km'] ?? 0,2,',','.') ?>
+</p>
+</div>
+<div class="card-icon">📊</div>
+</div>
+
 </div>
 
 
@@ -141,6 +153,7 @@
 
 <script>
 
+// 🔵 VIAGENS
 new Chart(document.getElementById('tripChart'),{
 type:'bar',
 data:{
@@ -152,6 +165,7 @@ data:[12,19,8,15,10,14]
 }
 });
 
+// 🟣 DESPESAS
 new Chart(document.getElementById('expenseChart'),{
 type:'doughnut',
 data:{

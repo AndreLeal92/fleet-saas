@@ -186,4 +186,25 @@ class TripController {
 
     }
 
+// ========================================
+// ATUALIZA KM AUTOMATICAMENTE
+// ========================================
+private function updateVehicleKm($vehicle_id, $km_end){
+
+    require_once __DIR__ . '/../config/database.php';
+
+    $db = Database::getConnection();
+
+    $stmt = $db->prepare("
+        UPDATE vehicles 
+        SET current_km = :km 
+        WHERE id = :id
+    ");
+
+    $stmt->execute([
+        'km' => $km_end,
+        'id' => $vehicle_id
+    ]);
+}
+
 }
